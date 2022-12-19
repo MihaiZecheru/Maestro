@@ -61,3 +61,7 @@ header > div > button > a {
     background-color: #ffa07a;
   }
 }
+
+header > * {
+  user-select: none;
+}
