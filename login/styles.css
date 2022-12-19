@@ -1,0 +1,27 @@
+main {
+  width: 100%;
+  margin-top: 5%;
+  display: flex;
+  justify-content: center;
+}
+
+main > * {
+  width: 100%;
+  max-width: 600px;
+}
+
+#pic-input {
+  display: none;
+}
+
+#profilepic {
+  width: 50%;
+  height: 50%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
