@@ -1,0 +1,10 @@
+main {
+  display: flex;
+  margin-top: 3.125em;
+  height: calc(100vh - 3.125em);
+  width: 100vw;
+}
+
+main > div {
+  margin: 15em auto;
+}
