@@ -65,3 +65,7 @@ header > div > button > a {
 header > * {
   user-select: none;
 }
+
+.disable-highlighting {
+  user-select: none;
+}
