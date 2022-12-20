@@ -6,12 +6,12 @@ export default class API {
   }
 
   static async get(path) {
-    const response = await fetch(this.URL());
+    const response = await fetch(this.URL(path));
     return await response.json();
   }
 
   static async post(path, data) {
-    const response = await fetch(this.URL(), {
+    const response = await fetch(this.URL(path), {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -19,7 +19,7 @@ export default class API {
   }
 
   static async patch(path, data) {
-    const response = await fetch(this.URL(), {
+    const response = await fetch(this.URL(path), {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
@@ -27,7 +27,7 @@ export default class API {
   }
 
   static async delete(path) {
-    const response = await fetch(this.URL(), {
+    const response = await fetch(this.URL(path), {
       method: 'DELETE',
     });
     return await response.json();
