@@ -7,9 +7,10 @@ export function loggedIn() {
 
 export async function login(username, password) {
   const user = await API.get('users/' + username);
-  
+
   if (user && user.password === password) {
     setCookie('token', user.token);
+    setCookie('cc-username', user.username);
     return true;
   }
 
@@ -18,4 +19,8 @@ export async function login(username, password) {
 
 export function logout() {
   deleteCookie('token');
+}
+
+export function getUsername() {
+  return getCookie('cc-username');
 }
