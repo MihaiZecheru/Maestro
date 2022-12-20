@@ -18,9 +18,9 @@ export default class API {
     return await response.json();
   }
 
-  static async patch(path, data) {
+  static async put(path, data) {
     const response = await fetch(this.URL(path), {
-      method: 'PATCH',
+      method: 'PUT',
       body: JSON.stringify(data),
     });
     return await response.json();
