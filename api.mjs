@@ -32,4 +32,8 @@ export default class API {
     });
     return await response.json();
   }
+
+  static async getModules() {
+    return ((await this.get('/modules/')) || []).map(module => module.name);
+  }
 }
