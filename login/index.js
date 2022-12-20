@@ -10,7 +10,7 @@ document.getElementById('submit').addEventListener('click', async () => {
 
   await login(username, password).then((success) => {
     if (success) {
-      window.location.href = '/home';
+      window.location.href = '/home/';
     } else {
       new bootstrap.Modal(document.getElementById('login-error')).show();
       document.getElementById('close').focus();
@@ -56,13 +56,13 @@ document.getElementById('username').addEventListener('keydown', (e) => {
 
 document.getElementById('login-error').addEventListener('hidden.bs.modal', () => {
   document.querySelector('.modal-backdrop.show')?.remove();
-  document.getElementById('username').focus();
+  document.getElementById('username').select();
 });
 
 document.querySelectorAll('button').forEach((button) => {
   button.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      e.target.children[0].click();
+      e.target.children[0]?.click();
     }
   });
 });
