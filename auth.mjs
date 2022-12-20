@@ -10,7 +10,7 @@ export async function login(username, password) {
 
   if (user && user.password === password) {
     setCookie('token', user.token);
-    setCookie('cc-username', user.username);
+    setCookie('cc-username', username);
     return true;
   }
 
