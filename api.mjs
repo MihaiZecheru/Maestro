@@ -1,13 +1,17 @@
 export default class API {
   static baseURL = 'https://codeclass-51eae-default-rtdb.firebaseio.com/';
 
+  static URL(path = '') {
+    return (this.baseURL + path + '.json').replace('//', '/');
+  }
+
   static async get(path) {
-    const response = await fetch(this.baseURL + path + '.json');
+    const response = await fetch(this.URL());
     return await response.json();
   }
 
   static async post(path, data) {
-    const response = await fetch(this.baseURL + path + '.json', {
+    const response = await fetch(this.URL(), {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -15,7 +19,7 @@ export default class API {
   }
 
   static async patch(path, data) {
-    const response = await fetch(this.baseURL + path + '.json', {
+    const response = await fetch(this.URL(), {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
@@ -23,7 +27,7 @@ export default class API {
   }
 
   static async delete(path) {
-    const response = await fetch(this.baseURL + path + '.json', {
+    const response = await fetch(this.URL(), {
       method: 'DELETE',
     });
     return await response.json();
