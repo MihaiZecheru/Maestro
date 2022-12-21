@@ -53,15 +53,28 @@ export default class API {
   static async createAssignment(assignment) {
     const uuid = uuid4();
     assignment['id'] = uuid;
+
+    // increment the total number of assignments
     await this.put('/total/assignments', (await this.get('/total/assignments')) + 1);
+
+    // update the total number of points
     await this.put('/total/points', (await this.get('/total/points')) + assignment.points);
+
+    // update the number of assignments in the module
     await this.put(`/modules/${assignment.module}/assignmentCount`, (await this.get(`/modules/${assignment.module}/assignmentCount`)) + 1);
+
+    // update the number of points in the module
     await this.put(`/modules/${assignment.module}/pointsInModule`, (await this.get(`/modules/${assignment.module}/pointsInModule`)) + assignment.points);
+
+    // create the assignment
     return await this.put(`/assignments/${assignment.module}/${uuid}`, assignment, false);
   }
 
   static async createModule(module) {
+    // increment the total number of modules
     await this.put('/total/modules', (await this.get('/total/modules')) + 1);
+
+    // create the module
     return await this.put(`/modules/${module.name}`, module, false);
   }
 }
