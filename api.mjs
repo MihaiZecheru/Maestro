@@ -91,4 +91,24 @@ export default class API {
     // create the resource
     return await this.put(`/resources/${resource.module}/${uuid}`, resource, false);
   }
+
+  static async createQuiz(quiz) {
+    const uuid = uuid4();
+    quiz['id'] = uuid;
+
+    // increment the total number of quizzes
+    await this.put('/total/quizzes', (await this.get('/total/quizzes')) + 1);
+
+    // update the total number of points
+    await this.put('/total/points', (await this.get('/total/points')) + quiz.points);
+
+    // update the number of quizzes in the module
+    await this.put(`/modules/${quiz.module}/quizCount`, (await this.get(`/modules/${quiz.module}/quizCount`)) + 1);
+
+    // update the number of points in the module
+    await this.put(`/modules/${quiz.module}/pointsInModule`, (await this.get(`/modules/${quiz.module}/pointsInModule`)) + quiz.points);
+
+    // create the quiz
+    return await this.put(`/quizzes/${quiz.module}/${uuid}`, quiz, false);
+  }
 }
