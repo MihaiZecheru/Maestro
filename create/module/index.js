@@ -27,7 +27,7 @@ nameBox.addEventListener('input', (e) => {
   } else if (e.target.value.length > 25) {
     document.getElementById('invalid-name').innerText = "Must be less than 25 characters.";
   } else {
-    document.getElementById('invalid-name').innerText = "Must be alphanumeric (no spaces).";
+    document.getElementById('invalid-name').innerText = "Must be alphanumeric (no spaces)";
   }
 
   if (/[^\w\-]/.test(e.target.value) || !e.target.value || e.target.value.length > 25 || modules.includes(e.target.value)) {
