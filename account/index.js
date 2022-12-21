@@ -1,5 +1,5 @@
-import API from '../api.mjs';
-import { getUsername } from '../auth.mjs';
+import API from '/api.mjs';
+import { getUsername } from '/auth.mjs';
 
 let password;
 
