@@ -120,7 +120,9 @@ submit.addEventListener('click', (e) => {
     return;
   }
 
+  submit.disabled = true;
   e.preventDefault();
+
   API.createAssignment({
     name: nameBox.value,
     points: parseInt(pointValueBox.value),

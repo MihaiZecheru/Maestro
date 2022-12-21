@@ -58,7 +58,9 @@ submit.addEventListener('click', (e) => {
     return;
   }
 
+  submit.disabled = true;
   e.preventDefault();
+
   API.createModule({
     name: nameBox.value,
     description: description.value,
