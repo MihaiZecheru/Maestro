@@ -13,12 +13,18 @@ const submit = document.getElementById('submit');
 
 // disable past on datepicker
 new mdb.Datepicker(document.querySelector('.datepicker-disable-past'), {
-  disablePast: true
+  disablePast: true,
+  format: 'mm/dd/yyyy',
 });
 
-let modules
-API.getModules().then((_modules) => {
-  modules = _modules;
+API.getModules().then((modules) => {
+  // populate modules selector
+  modules.forEach((module) => {
+    const option = document.createElement('option');
+    option.value = module;
+    option.innerText = module;
+    moduleBox.appendChild(option);
+  });
 });
 
 function setInvalid(e) {
@@ -50,7 +56,7 @@ pointValueBox.addEventListener('input', (e) => {
 });
 
 moduleBox.addEventListener('input', (e) => {
-  if (modules.includes(e.target.value)) {
+  if (e.target.value) {
     setValid(e);
   } else {
     setInvalid(e);

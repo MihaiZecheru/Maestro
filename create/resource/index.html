@@ -32,13 +32,13 @@
   
   <header>
     <div>
-      <button>
+      <button class="btn btn-dark">
         <a href="/" tabindex="-1">Home</a>
       </button>
-      <button>
+      <button class="btn btn-dark">
         <a href="/dashboard/" tabindex="-1">Dashboard</a>
       </button>
-      <button>
+      <button class="btn btn-dark">
         <a href="/login/" id="login" tabindex="-1">Login</a>
       </button>
     </div>
@@ -93,15 +93,11 @@
         </div>
         <div class="col-md-6">
           <label for="module" class="form-label">Module</label>
-          <div class="input-group has-validation">
-            <span class="input-group-text disable-highlighting" id="module-prefix" style="background: #E9ECEF">@</span>
-            <input type="text" class="form-control" id="module" aria-describedby="module-prefix" required>
-            <div class="valid-feedback">
-              Looks good!
-            </div>
-            <div class="invalid-feedback">
-              Module does not exist.
-            </div>
+          <select class="form-select" id="module" required>
+            <option selected disabled value="">...</option>
+          </select>
+          <div class="valid-feedback">
+            Looks good!
           </div>
         </div>
         <div class="col-md-12">

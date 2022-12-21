@@ -8,9 +8,14 @@ const body = document.getElementById('body');
 const moduleBox = document.getElementById('module');
 const submit = document.getElementById('submit');
 
-let modules;
-API.getModules().then((_modules) => {
-  modules = _modules;
+API.getModules().then((modules) => {
+  // populate modules selector
+  modules.forEach((module) => {
+    const option = document.createElement('option');
+    option.value = module;
+    option.innerText = module;
+    moduleBox.appendChild(option);
+  });
 });
 
 function setInvalid(e) {
@@ -24,23 +29,15 @@ function setValid(e) {
 }
 
 nameBox.addEventListener('input', (e) => {
-  if (modules.includes(e.target.value)) {
-    document.getElementById('invalid-name').innerText = "Module already exists.";
-  } else if (e.target.value.length > 25) {
-    document.getElementById('invalid-name').innerText = "Must be less than 25 characters.";
-  } else {
-    document.getElementById('invalid-name').innerText = "Must be alphanumeric (no spaces)";
-  }
-
-  if (/[^\w\-]/.test(e.target.value) || !e.target.value || e.target.value.length > 25 || modules.includes(e.target.value)) {
+  if (/[^\w\s]/.test(e.target.value) || !e.target.value) {
     setInvalid(e);
   } else {
     setValid(e);
   }
 });
 
-moduleBox.addEventListener('input', (e) => {
-  if (modules.includes(e.target.value)) {
+moduleBox.addEventListener('change', (e) => {
+  if (e.target.value) {
     setValid(e);
   } else {
     setInvalid(e);
