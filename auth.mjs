@@ -1,10 +1,6 @@
 import { getCookie, setCookie, deleteCookie } from './cookies.mjs';
 import API from './api.mjs';
 
-export function loggedIn() {
-  return !!getCookie('token');
-}
-
 export async function login(username, password) {
   const user = await API.get('users/' + username);
 
@@ -16,6 +12,10 @@ export async function login(username, password) {
   }
 
   return false;
+}
+
+export function loggedIn() {
+  return !!getCookie('token');
 }
 
 export function logout() {
@@ -30,4 +30,8 @@ export async function teacherOnly() {
   if (loggedIn() && !getCookie('cc-isteacher')) {
     window.location.href = '/dashboard/?error=teacherOnly';
   }
+}
+
+export async function isTeacher() {
+  return loggedIn() && getCookie('cc-isteacher');
 }
