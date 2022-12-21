@@ -11,6 +11,7 @@ export async function login(username, password) {
   if (user && user.password === password) {
     setCookie('token', user.token);
     setCookie('cc-username', username);
+    setCookie('cc-isteacher', user.isteacher);
     return true;
   }
 
@@ -26,13 +27,7 @@ export function getUsername() {
 }
 
 export async function teacherOnly() {
-  if (loggedIn() && !(await API.get('/users/' + getUsername())).isteacher) {
+  if (loggedIn() && !getCookie('cc-isteacher')) {
     window.location.href = '/dashboard/?error=teacherOnly';
-  }
-}
-
-export async function requireLogin() {
-  if (!loggedIn()) {
-    window.location.href = '/login/?error=loginRequired';
   }
 }
