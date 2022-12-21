@@ -63,7 +63,7 @@ submit.addEventListener('click', (e) => {
     name: nameBox.value,
     description: description.value,
     assignmentCount: 0,
-    referencesCount: 0,
+    resourceCount: 0,
     pointsInModule: 0
   }).then((res) => {
     if (res.status === 200) {
