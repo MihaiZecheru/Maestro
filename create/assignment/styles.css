@@ -23,3 +23,7 @@ textarea {
   background: #fff;
   margin-top: 2.1em;
 }
+
+textarea {
+  height: 2.5rem;
+}
