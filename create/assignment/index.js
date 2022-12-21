@@ -5,7 +5,7 @@ teacherOnly();
 const nameBox = document.getElementById('name');
 const pointValueBox = document.getElementById('point-value');
 const moduleBox = document.getElementById('module');
-const description = document.getElementById('description');
+const descriptionBox = document.getElementById('description');
 const submissionTypeBox = document.getElementById('submission-type');
 const allowCommentsBox = document.getElementById('allow-comments');
 const dateBox = document.getElementById('date');
@@ -63,7 +63,12 @@ moduleBox.addEventListener('input', (e) => {
   }
 });
 
-description.addEventListener('input', (e) => {
+descriptionBox.addEventListener('input', (e) => {
+  if (!!e.target.value) {
+    e.target.classList.remove('is-invalid');
+    e.target.classList.remove('is-valid');
+  }
+  
   if (e.target.value.length <= 500) {
     document.getElementById('valid-charcount').innerText = e.target.value.length;
     setValid(e);
@@ -124,7 +129,7 @@ datetimeBtn.addEventListener('click', () => {
 });
 
 submit.addEventListener('click', (e) => {
-  if (nameBox.classList.contains('is-invalid') || pointValueBox.classList.contains('is-invalid') || moduleBox.classList.contains('is-invalid') || description.classList.contains('is-invalid') || submissionTypeBox.classList.contains('is-invalid') || dateBox.classList.contains('is-invalid')) {
+  if (nameBox.classList.contains('is-invalid') || pointValueBox.classList.contains('is-invalid') || moduleBox.classList.contains('is-invalid') || descriptionBox.classList.contains('is-invalid') || submissionTypeBox.classList.contains('is-invalid') || dateBox.classList.contains('is-invalid')) {
     e.preventDefault();
     return;
   }
@@ -141,7 +146,7 @@ submit.addEventListener('click', (e) => {
     name: nameBox.value,
     points: parseInt(pointValueBox.value),
     module: moduleBox.value,
-    description: description.value,
+    description: descriptionBox.value,
     submissionType: submissionTypeBox.value,
     due: dateBox.value,
     allowComments: allowCommentsBox.checked,
