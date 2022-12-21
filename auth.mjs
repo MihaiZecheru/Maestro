@@ -24,3 +24,15 @@ export function logout() {
 export function getUsername() {
   return getCookie('cc-username');
 }
+
+export async function teacherOnly() {
+  if (loggedIn() && !(await API.get('/users/' + getUsername())).isteacher) {
+    window.location.href = '/dashboard/?error=teacherOnly';
+  }
+}
+
+export async function requireLogin() {
+  if (!loggedIn()) {
+    window.location.href = '/login/?error=loginRequired';
+  }
+}
