@@ -6,7 +6,7 @@ if (loggedIn()) {
   login.href = '/account/';
 } else {
   if (window.location.pathname !== '/' && window.location.pathname !== '/index.html' && window.location.pathname !== '/login/' && window.location.pathname !== '/login/index.html') {
-    window.location.href = '/';
+    window.location.href = '/login/?error=loginRequired';
   }
 }
 
