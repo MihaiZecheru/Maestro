@@ -77,4 +77,18 @@ export default class API {
     // create the module
     return await this.put(`/modules/${module.name}`, module, false);
   }
+
+  static async createResource(resource) {
+    const uuid = uuid4();
+    resource['id'] = uuid;
+
+    // increment the total number of resources
+    await this.put('/total/resources', (await this.get('/total/resources')) + 1);
+
+    // update the number of resources in the module
+    await this.put(`/modules/${resource.module}/resourceCount`, (await this.get(`/modules/${resource.module}/resourceCount`)) + 1);
+
+    // create the resource
+    return await this.put(`/resources/${resource.module}/${uuid}`, resource, false);
+  }
 }
