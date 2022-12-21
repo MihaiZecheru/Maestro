@@ -1,0 +1,25 @@
+main {
+  display: flex;
+  margin-top: 10em;
+  justify-content: center;
+  height: calc(vh - 3.125em);
+  width: 100vw;
+}
+
+main > div {
+  width: 50%;
+}
+
+textarea::-webkit-scrollbar {
+  display: none;
+}
+
+textarea {
+  overflow-x: hidden;
+  padding-right: 2em; 
+}
+
+#date {
+  background: #fff;
+  margin-top: 2.1em;
+}
