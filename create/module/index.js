@@ -65,6 +65,7 @@ submit.addEventListener('click', (e) => {
     name: nameBox.value,
     description: description.value,
     assignmentCount: 0,
+    quizCount: 0,
     resourceCount: 0,
     pointsInModule: 0
   }).then((res) => {
