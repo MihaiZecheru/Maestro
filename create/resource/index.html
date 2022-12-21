@@ -83,7 +83,7 @@
       <form class="row g-3">
         <div class="col-md-6">
           <label for="name" class="form-label">Resource Name</label>
-          <input type="text" class="form-control" id="name" placeholder="Name" required>
+          <input type="text" class="form-control" id="name" placeholder="Name" required autocomplete="off" />
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -102,7 +102,7 @@
         </div>
         <div class="col-md-12">
           <label for="url" class="form-label">Content Link</label>
-          <input type="text" class="form-control" id="url" placeholder="URL">
+          <input type="text" class="form-control" id="url" placeholder="URL" autocomplete="off" />
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -114,10 +114,10 @@
           <label for="body" class="form-label">Body</label>
           <textarea type="text" class="form-control" id="body"></textarea>
           <div class="valid-feedback">
-            Looks good! (<span id="valid-charcount"></span>/9999)
+            Looks good! (<span id="valid-charcount">0</span>/9999)
           </div>
           <div class="invalid-feedback">
-            Must be less than 9999 characters. (<span id="invalid-charcount"></span>/9999)
+            Must be less than 9999 characters. (<span id="invalid-charcount">0</span>/9999)
           </div>
         </div>
         <div class="col-12">

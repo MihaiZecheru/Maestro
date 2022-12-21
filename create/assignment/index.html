@@ -66,7 +66,7 @@
       <form class="row g-3">
         <div class="col-md-4">
           <label for="name" class="form-label">Assignment Name</label>
-          <input type="text" class="form-control" id="name" placeholder="Name" required>
+          <input type="text" class="form-control" id="name" placeholder="Name" required autocomplete="off" />
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -76,7 +76,7 @@
         </div>
         <div class="col-md-4">
           <label for="point-value" class="form-label">Point Value</label>
-          <input type="text" class="form-control" id="point-value" placeholder="0" required>
+          <input type="text" class="form-control" id="point-value" placeholder="0" required autocomplete="off" />
           <div class="valid-feedback">
             Looks good!
           </div>
@@ -97,10 +97,10 @@
           <label for="description" class="form-label">Description</label>
           <textarea type="text" class="form-control" id="description"></textarea>
           <div class="valid-feedback">
-            Looks good! (<span id="valid-charcount"></span>/500)
+            Looks good! (<span id="valid-charcount">0</span>/500)
           </div>
           <div class="invalid-feedback">
-            Must be less than 500 characters. (<span id="invalid-charcount"></span>/500)
+            Must be less than 500 characters. (<span id="invalid-charcount">0</span>/500)
           </div>
         </div>
         <div class="col-md-3">
@@ -121,8 +121,8 @@
         </div>
         <div class="col-md-3" id="datepicker-container">
           <div class="form-outline datepicker-disable-past">
-            <input type="text" class="form-control" id="date" />
-            <label for="date" class="form-label">Select a date</label>
+            <input type="text" class="form-control" id="date" autocomplete="off" />
+            <label for="date" class="form-label">Due Date</label>
           </div>
         </div>
         <div class="col-12">
