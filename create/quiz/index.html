@@ -32,18 +32,18 @@
   
   <header>
     <div>
-      <button>
+      <button class="btn btn-dark">
         <a href="/" tabindex="-1">Home</a>
       </button>
-      <button>
+      <button class="btn btn-dark">
         <a href="/dashboard/" tabindex="-1">Dashboard</a>
       </button>
-      <button>
+      <button class="btn btn-dark">
         <a href="/login/" id="login" tabindex="-1">Login</a>
       </button>
     </div>
   </header>
-  
+
   <div class="modal" tabindex="-1" id="error-modal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -62,7 +62,108 @@
   </div>
 
   <main>
-
+    <ul class="stepper" data-mdb-stepper="stepper" data-mdb-stepper-linear="true">
+      <form class="needs-validation stepper-form" novalidate>
+        <li class="stepper-step stepper-active" id="step-1">
+          <div class="stepper-head">
+            <span class="stepper-head-icon">1</span>
+            <span class="stepper-head-text">Name & Module</span>
+          </div>
+          <div class="stepper-content py-4">
+            <div class="form-outline">
+              <input type="text" id="name" class="form-control" required autocomplete="off" />
+              <label class="form-label" for="name">Quiz Name</label>
+              <div class="invalid-feedback">Must be alphanumeric</div>
+              <div class="valid-feedback">Looks good!</div>
+            </div>
+            <br>
+            <div class="form-outline">
+              <textarea type="text" id="description" class="form-control"></textarea>
+              <label class="form-label" for="description">Description</label>
+              <div class="invalid-feedback">Must be less than 500 characters. (<span id="invalid-charcount">0</span>/500)</div>
+              <div class="valid-feedback">Looks good! (<span id="valid-charcount">0</span>/500)</div>
+            </div>
+          </div>
+        </li>
+        <li class="stepper-step" id="step-2">
+          <div class="stepper-head">
+            <span class="stepper-head-icon">2</span>
+            <span class="stepper-head-text">Additional Information</span>
+          </div>
+          <div class="stepper-content py-3 center-children">
+            <div class="half-width-children">
+              <div>
+                <label for="module" class="form-label">Module</label>
+                <select class="form-select" id="module" required>
+                  <option selected disabled value="">...</option>
+                </select>
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+              </div>
+              <br>
+              <div>
+                <label for="submission-type" class="form-label">Submission Types</label>
+                <select class="form-select" id="submission-type" required>
+                  <option selected disabled value="">...</option>
+                  <option value="txt">Text</option>
+                  <option value="lnk">Link</option>
+                  <option value="f">File</option>
+                  <option value="txt&lnk">Text & Link</option>
+                  <option value="txt&f">Text & File</option>
+                  <option value="lnk&f">Link & File</option>
+                  <option value="txt&lnk&f">Text & Link & File</option>
+                </select>
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+              </div>
+              <br>
+              <hr>
+              <br>
+              <div class="form-outline">
+                <input type="text" class="form-control" id="point-value" placeholder="0" required autocomplete="off">
+                <label for="point-value" class="form-label">Point Value</label>
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+                <div class="invalid-feedback">
+                  Must be a positive number.
+                </div>
+              </div>
+              <br>
+              <div>
+                <div class="form-outline datepicker-disable-past">
+                  <input type="text" class="form-control" id="date" autocomplete="off" />
+                  <label for="date" class="form-label">Due Date</label>
+                </div>
+              </div>
+              <br>
+              <div class="form-check" id="bottom-margin-20rem">
+                <input class="form-check-input" type="checkbox" value="" id="allow-comments">
+                <label class="form-check-label" for="allow-comments">
+                  Allow comments
+                </label>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="stepper-step" id="step-3">
+          <div class="stepper-head">
+            <span class="stepper-head-icon">3</span>
+            <span class="stepper-head-text">Make Quiz</span>
+          </div>
+          <div class="stepper-content py-3">
+            <div class="form-outline">
+              <input type="text" id="custom-validation-input-3" class="form-control" required />
+              <label class="form-label" for="custom-validation-input-3">step 3</label>
+              <div class="invalid-feedback">invalid</div>
+              <button class="btn btn-primary" type="submit" id="submit">Create Quiz</button>
+            </div>
+          </div>
+        </li>
+      </form>
+    </ul>
   </main>
 
 </body>

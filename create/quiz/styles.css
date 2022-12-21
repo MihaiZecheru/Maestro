@@ -1,0 +1,34 @@
+.stepper-head-icon {
+  background-color: #EFAB90!important;
+}
+
+.stepper-head-text {
+  font-weight: 600!important;
+}
+
+textarea {
+  height: 20rem;
+  padding-bottom: 8rem;
+}
+
+#module, #submission-type {
+  background-color: transparent;
+  text-decoration: bold;
+}
+
+.center-children {
+  width: 100%;
+}
+
+.half-width-children {
+  width: 100%;
+  margin-left: 26%;
+}
+
+.half-width-children > div {
+  width: 50%;
+}
+
+#bottom-margin-20rem {
+  padding-bottom: 20rem;
+}
