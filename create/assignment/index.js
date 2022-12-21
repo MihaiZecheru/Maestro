@@ -83,6 +83,14 @@ allowCommentsBox.addEventListener('keydown', (e) => {
 });
 
 function dateboxHandler(e) {
+  const today = new Date();
+  const date = new Date(e.target.value);
+
+  if (date == "Invalid Date" || date < today) {
+    setInvalid(e);
+    return;
+  }
+
   if ((/^\d\d\/\d\d\/\d\d\d\d$/).test(e.target.value)) {
     setValid(e);
   } else {
