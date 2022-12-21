@@ -39,18 +39,11 @@ header > div {
   display: inline-block;
 }
 
-header > div > button {
-  margin-left: 1em;
-  width: 7.5em;
-  border: none;
-  border-radius: 1em;
-  height: 2em;
-  background-color: #333;
-}
-
-header > div > button > a {
+header > div > button > a,
+header > div > button > a:visited {
   text-decoration: none;
   color: white;
+  font-weight: 400;
 }
 
 /* Add an animation to the banner */
