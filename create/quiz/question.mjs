@@ -1,9 +1,12 @@
+import { uuid4 } from "/api.mjs";
+
 export default class Question {
   constructor(question, points, options, correctAnswer) {
-    this.question = question;
-    this.points = points;
-    this.options = options;
-    this.correctAnswer = correctAnswer;
+    this.question = question; // string
+    this.points = points; // float
+    this.options = options; // arr[string]
+    this.correctAnswer = correctAnswer; // char
+    this.uuid = uuid4(); // string
   }
 
   getOptionA() {
@@ -22,7 +25,7 @@ export default class Question {
     return this.options[3];
   }
 
-  isCorrectAnswer(answer) {
-    return this.correctAnswer === answer;
+  isCorrectAnswer(c) {
+    return this.correctAnswer === c;
   }
 }
