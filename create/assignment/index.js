@@ -97,6 +97,10 @@ function dateboxHandler(e) {
   const today = new Date();
   const date = new Date(e.target.value);
 
+  // set time to 00:00:00:000
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+
   if (date == "Invalid Date" || date < today) {
     setInvalid(e);
     return;

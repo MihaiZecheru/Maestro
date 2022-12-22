@@ -104,8 +104,9 @@ function dateboxHandler(e) {
   const today = new Date();
   const date = new Date(e.target.value);
 
-  // set time to 23:59:59
-  date.setUTCHours(23, 59, 59, 999);
+  // set time to 00:00:00:000
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
 
   if (date == "Invalid Date" || date < today) {
     setInvalid(e);
@@ -182,3 +183,27 @@ document.getElementById('step-1').addEventListener('click', () => {
 });
 
 nameBox.focus();
+
+descriptionBox.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    stepper.nextStep();
+    new Promise(() => {
+      setTimeout(() => {
+        moduleBox.focus();
+      }, 1000);
+    })
+  }
+});
+
+allowCommentsBox.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    stepper.nextStep();
+    new Promise(() => {
+      setTimeout(() => {
+        dateBox.focus();
+      }, 1000);
+    })
+  }
+});
