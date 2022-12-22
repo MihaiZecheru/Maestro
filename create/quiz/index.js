@@ -156,27 +156,104 @@ submit.addEventListener('click', (e) => {
   submit.disabled = true;
   e.preventDefault();
   
+  const forms = document.querySelectorAll('.tab-pane.fade:not(#list-buttons)');
   let questions = [];
 
   // validate every form
+  for (let i = 1; i <= forms.length; i++) {
+    const form = forms[i - 1];
+    const question = form.querySelector('.question').value;
 
-  const questionCount = document.querySelectorAll('.list-group-item').length - 1;
+    if (!question) {
+      // modal showing the question number (i) that has no question given
+      submit.disabled = false;
+      document.getElementById('no-question-given-modal-question-number').innerText = i;
+      new mdb.Modal(document.getElementById('no-question-given-modal')).show();
+      document.getElementById('no-question-given-modal').addEventListener('hidden.mdb.modal', () => {
+        document.querySelectorAll('modal-backdrop').forEach((ele) => ele.remove());
+        new mdb.Tab(document.getElementById(`list-q${i}-list`)).show();
+      });
+      return;
+    }
 
-  for (let i = 1; i <= questionCount; i++) {
-    const question = document.getElementById(`question-${i}`);
-    const questionPoints = question.getElementById(`question-${i}-points`);
-  }
+    const points = form.querySelector('.question-point-value > input').value;
 
-  
-  return; // TODO:
+    if (/[^\d\.]/.test(points) || (points.match(/\./g) || []).length > 1 || points.startsWith('.') || points.endsWith('.') || !points) {
+      // modal showing the question number (i) that has invalid points given
+      submit.disabled = false;
+      document.getElementById('invalid-points-modal-question-number').innerText = i;
+      new mdb.Modal(document.getElementById('invalid-points-modal')).show();
+      document.getElementById('invalid-points-modal').addEventListener('hidden.mdb.modal', () => {
+        document.querySelectorAll('modal-backdrop').forEach((ele) => ele.remove());
+        new mdb.Tab(document.getElementById(`list-q${i}-list`)).show();
+      });
+      return;
+    }
+
+    const options = [
+      form.querySelector('.answer-option-a').value,
+      form.querySelector('.answer-option-b').value,
+      form.querySelector('.answer-option-c').value,
+      form.querySelector('.answer-option-d').value
+    ];
+
+    if (options[0].length === 0 && options[1].length === 0 && options[2].length === 0 && options[3].length === 0) {
+      // modal showing the question number (i) that has no options given
+      submit.disabled = false;
+      document.getElementById('no-options-given-modal-question-number').innerText = i;
+      new mdb.Modal(document.getElementById('no-options-given-modal')).show();
+      document.getElementById('no-options-given-modal').addEventListener('hidden.mdb.modal', () => {
+        document.querySelectorAll('modal-backdrop').forEach((ele) => ele.remove());
+        new mdb.Tab(document.getElementById(`list-q${i}-list`)).show();
+      });
+      return;
+    }
+
+    let correct = Array.from(form.querySelectorAll('.radio-btn > input')).filter((ele) => ele.checked);
+    
+    if (correct.length === 0) {
+      // modal showing the question number (i) that has no 'correct' answer checked
+      submit.disabled = false;
+      document.getElementById('no-answer-given-modal-question-number').innerText = i;
+      new mdb.Modal(document.getElementById('no-answer-given-modal')).show();
+      document.getElementById('no-answer-given-modal').addEventListener('hidden.mdb.modal', () => {
+        document.querySelectorAll('modal-backdrop').forEach((ele) => ele.remove());
+        new mdb.Tab(document.getElementById(`list-q${i}-list`)).show();
+      });
+      return;
+    }
+
+    correct = correct[0].getAttribute('data-option');
+
+    // check to see if the correct answer is an empty option
+    if (options[correct.charCodeAt(0) - 97].length === 0) {
+      // modal showing the question number (i) that has an empty option as the correct answer
+      submit.disabled = false;
+      document.getElementById('empty-answer-given-modal-question-number').innerText = i;
+      new mdb.Modal(document.getElementById('empty-answer-given-modal')).show();
+      document.getElementById('empty-answer-given-modal').addEventListener('hidden.mdb.modal', () => {
+        document.querySelectorAll('modal-backdrop').forEach((ele) => ele.remove());
+        new mdb.Tab(document.getElementById(`list-q${i}-list`)).show();
+      });
+      return;
+    }
+
+    // all values are valid, add to questions array
+    questions.push(new Question(question, points, options, correct));
+  };
+
+  // get the total amount of points the quiz is worth
+  const totalPoints = questions.reduce((acc, cur) => acc + parseInt(cur.points), 0);
+
   API.createQuiz({
     name: nameBox.value,
-    // points: parseInt(pointValueBox.value),
+    points: totalPoints,
     module: moduleBox.value,
     description: descriptionBox.value,
     submissionType: submissionTypeBox.value,
     due: dateBox.value,
     allowComments: allowCommentsBox.checked,
+    questions
   }).then((res) => {
     if (res.status === 200) {
       window.location.href = '/dashboard/';
@@ -303,19 +380,19 @@ addQuestion.addEventListener('click', (e) => {
         <hr id="uneven-hr">
         <br>
         <div class="radio-btn radio-btn-manual first-radio-btn">
-          <input class="form-check-input" type="radio" id="question-${questionNumber}-a-iscorrect" tabindex="2" />
+          <input class="form-check-input" type="radio" id="question-${questionNumber}-a-iscorrect" data-option="a" tabindex="2" />
         </div>
         <br>
         <div class="radio-btn radio-btn-manual">
-          <input class="form-check-input" type="radio" id="question-${questionNumber}-b-iscorrect" tabindex="4" />
+          <input class="form-check-input" type="radio" id="question-${questionNumber}-b-iscorrect" data-option="b" tabindex="4" />
         </div>
         <br>
         <div class="radio-btn radio-btn-manual">
-          <input class="form-check-input" type="radio" id="question-${questionNumber}-c-iscorrect" tabindex="6" />
+          <input class="form-check-input" type="radio" id="question-${questionNumber}-c-iscorrect" data-option="c" tabindex="6" />
         </div>
         <br>
         <div class="radio-btn radio-btn-manual">
-          <input class="form-check-input" type="radio" id="question-${questionNumber}-d-iscorrect" tabindex="8" />
+          <input class="form-check-input" type="radio" id="question-${questionNumber}-d-iscorrect" data-option="d" tabindex="8" />
         </div>
         <br>
         <hr style="margin-top: .5rem;">
@@ -416,10 +493,16 @@ addQuestion.addEventListener('click', (e) => {
     // handle the checkmark validation
     Array.from(document.querySelectorAll('.question-manual')).forEach((el) => {
       el.addEventListener('input', (e) => {
+        const questionNumber = el.id.substring(9);
+        
         if (e.target.value) {
             document.getElementById(`question-${questionNumber}-checkmark`).checked = true;
+            // write the question prompt to the sidebar
+            document.getElementById(`list-q${questionNumber}-list`).innerText = `Question #${questionNumber} - ${e.target.value}`;
           } else {
             document.getElementById(`question-${questionNumber}-checkmark`).checked = false;
+            // remove question prompt from the sidebar
+            document.getElementById(`list-q${questionNumber}-list`).innerText = `Question #${questionNumber}`;
           }
         });
     });
@@ -435,13 +518,6 @@ addQuestion.addEventListener('click', (e) => {
       });
     });
 });
-
-nameBox.value = 'a'
-moduleBox.value = 'test-module'
-descriptionBox.value = 'test-description'
-submissionTypeBox.value = 'txt'
-dateBox.value = '01/01/2023'
-allowCommentsBox.checked = true
 
 // pressing enter on a radio button clicks it and prevents submitting the form
 Array.from(document.querySelectorAll('.radio-btn > input')).forEach((el) => {
@@ -475,10 +551,15 @@ Array.from(document.querySelectorAll('.radio-btn-group')).forEach((el) => {
 Array.from(document.querySelectorAll('.question')).forEach((el) => {
   el.addEventListener('input', (e) => {
     const questionNumber = el.id.substring(9);
+    
     if (e.target.value) {
         document.getElementById(`question-${questionNumber}-checkmark`).checked = true;
+        // write the question prompt to the sidebar
+        document.getElementById(`list-q${questionNumber}-list`).innerText = `Question #${questionNumber} - ${e.target.value}`;
       } else {
         document.getElementById(`question-${questionNumber}-checkmark`).checked = false;
+        // remove question prompt from the sidebar
+        document.getElementById(`list-q${questionNumber}-list`).innerText = `Question #${questionNumber}`;
       }
     });
 });
@@ -494,6 +575,5 @@ Array.from(document.querySelectorAll('.question-checkmark')).forEach((el) => {
   });
 });
 
-const s = document.getElementById('questions-content-container').offsetHeight;
-
-document.getElementById('questions').style.maxHeight = `${s}px`;
+const ofsh = document.getElementById('questions-content-container').offsetHeight;
+document.getElementById('questions').style.maxHeight = `${ofsh}px`;
