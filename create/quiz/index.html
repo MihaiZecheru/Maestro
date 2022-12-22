@@ -119,26 +119,12 @@
                 </div>
               </div>
               <br>
-              <hr>
-              <br>
-              <div class="form-outline">
-                <input type="text" class="form-control" id="point-value" placeholder="0" required autocomplete="off">
-                <label for="point-value" class="form-label">Point Value</label>
-                <div class="valid-feedback">
-                  Looks good!
-                </div>
-                <div class="invalid-feedback">
-                  Must be a positive number.
-                </div>
-              </div>
-              <br>
               <div>
                 <div class="form-outline datepicker-disable-past">
                   <input type="text" class="form-control" id="date" autocomplete="off" />
                   <label for="date" class="form-label">Due Date</label>
                 </div>
               </div>
-              <br>
               <div class="form-check" id="bottom-margin-20rem">
                 <input class="form-check-input" type="checkbox" value="" id="allow-comments">
                 <label class="form-check-label" for="allow-comments">
@@ -148,23 +134,337 @@
             </div>
           </div>
         </li>
+        
+        <script>
+          function deleteQuestion(question) {
+            // only allow the question to be deleted if it is the one with the highest number (ie. the last question)
+            const questionNumber = question.id.substring(9, question.id.indexOf("-", question.id.indexOf("-") + 1));
+            const highestNumber = document.getElementById('questions').querySelectorAll('a').length - 1;
+
+            if (questionNumber != highestNumber) {
+              new mdb.Modal(document.getElementById('not-last-question-modal-container')).show();
+              return;
+            }
+
+            if (questionNumber == 1) {
+              new mdb.Modal(document.getElementById('only-question-modal-container')).show();
+              return;
+            }
+
+            // remove the question content
+            question.parentElement.parentElement.parentElement.parentElement.parentElement.remove();
+
+            // remove the question from the sidenav
+            document.getElementById('questions').querySelector(`#list-q${questionNumber}-list`).remove();
+
+            // set the highest-numbered question to focus
+            new mdb.Tab(document.getElementById(`list-q${highestNumber - 1}-list`)).show();
+          }
+        </script>
+
         <li class="stepper-step" id="step-3">
           <div class="stepper-head">
             <span class="stepper-head-icon">3</span>
             <span class="stepper-head-text">Make Quiz</span>
           </div>
           <div class="stepper-content py-3">
-            <div class="form-outline">
-              <input type="text" id="custom-validation-input-3" class="form-control" required />
-              <label class="form-label" for="custom-validation-input-3">step 3</label>
-              <div class="invalid-feedback">invalid</div>
-              <button class="btn btn-primary" type="submit" id="submit">Create Quiz</button>
+            <div class="row">
+              <div class="col-4" id="questions-container">
+                <div class="list-group list-group-light list-group-small" id="questions" role="tablist">
+                  <a class="list-group-item list-group-item-action px-3 border-0 active" id="list-q1-list" data-mdb-toggle="list" href="#list-q1" role="tab" aria-controls="list-q1">Question #1</a>
+                  <a class="list-group-item list-group-item-action px-3 border-0" id="list-q2-list" data-mdb-toggle="list" href="#list-q2" role="tab" aria-controls="list-q2">Question #2</a>
+                  <a class="list-group-item list-group-item-action px-3 border-0" id="list-q3-list" data-mdb-toggle="list" href="#list-q3" role="tab" aria-controls="list-q3">Question #3</a>
+                  
+                    <!-- other questions will be generated here -->
+
+                    <a class="list-group-item list-group-item-action px-3 border-0" id="list-buttons-list" data-mdb-toggle="list" href="#list-settings" role="tab" aria-controls="list-settings" disabled>
+                    <button class="btn btn-primary" type="button" id="add-question">Add Question</button>
+                    <button class="btn btn-primary" type="submit" id="submit">Create Quiz</button>
+                  </a>
+                </div>
+              </div>
+              <div class="col-8">
+                <div class="tab-content" id="questions-content-container">
+                  <div class="tab-pane fade show active" id="list-q1" role="tabpanel" aria-labelledby="list-q1-list">
+                    <h1><center>Question #1</center></h1>
+                    <br>
+                    <div class="d-flex align-items-start bg-light mb-3" style="height: 100%; background-color: #F8DBC2!important;">
+                      <div class="col-md-1 radio-btn-group">
+                        <div class="form-check">
+                          <input class="form-check-input question-checkmark" type="checkbox" value="" id="question-1-checkmark" onclick="return false" tabindex="-1"/>
+                          <label class="form-check-label" for="question-1-checkmark"></label>
+                        </div>
+                        <hr id="uneven-hr">
+                        <br>
+                        <div class="radio-btn first-radio-btn">
+                          <input class="form-check-input" type="radio" id="question-1-a-iscorrect" tabindex="2" />
+                        </div>
+                        <br>
+                        <div class="radio-btn">
+                          <input class="form-check-input" type="radio" id="question-1-b-iscorrect" tabindex="4" />
+                        </div>
+                        <br>
+                        <div class="radio-btn">
+                          <input class="form-check-input" type="radio" id="question-1-c-iscorrect" tabindex="6" />
+                        </div>
+                        <br>
+                        <div class="radio-btn">
+                          <input class="form-check-input" type="radio" id="question-1-d-iscorrect" tabindex="8" />
+                        </div>
+                        <br>
+                        <hr style="margin-top: .48rem;">
+                      </div>
+                      <div class="col-sm-11">
+                        <div class="form-outline">
+                          <input type="text" id="question-1" class="form-control question" required autocomplete="off" tabindex="1" />
+                          <label class="form-label" for="question-1">Question</label>
+                        </div>
+                        <hr>
+                        <br>
+                        <div class="form-outline">
+                          <input type="text" id="question-1-a" class="form-control answer-option-a" required autocomplete="off" tabindex="3" />
+                          <label class="form-label" for="question-1-a">Answer Option A</label>
+                        </div>
+                        <br>
+                        <div class="form-outline">
+                          <input type="text" id="question-1-b" class="form-control answer-option-b" required autocomplete="off" tabindex="5" />
+                          <label class="form-label" for="question-1-b">Answer Option B</label>
+                        </div>
+                        <br>
+                        <div class="form-outline">
+                          <input type="text" id="question-1-c" class="form-control answer-option-c" required autocomplete="off" tabindex="7" />
+                          <label class="form-label" for="question-1-c">Answer Option C</label>
+                        </div>
+                        <br>
+                        <div class="form-outline">
+                          <input type="text" id="question-1-d" class="form-control answer-option-d" required autocomplete="off" tabindex="9" />
+                          <label class="form-label" for="question-1-d">Answer Option D</label>
+                        </div>
+                        <br>
+                        <hr>
+                        <div class="question-point-value-container d-flex align-items-start mb-2">
+                          <div class="col">
+                            <div class="form-outline question-point-value">
+                              <input type="text" class="form-control" id="question-1-point-value" placeholder="0" required autocomplete="off">
+                              <label for="question-1-point-value" class="form-label">Point Value</label>
+                              <div class="valid-feedback">
+                                Looks good!
+                              </div>
+                              <div class="invalid-feedback">
+                                Must be a positive number.
+                              </div>
+                            </div>
+                          </div>
+                          <div class="delete-question-btn col">
+                            <button class="btn btn-danger" type="button" id="question-1-delete" onclick="deleteQuestion(this)">Delete Question</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="list-q2" role="tabpanel" aria-labelledby="list-q2-list">
+                    <h1><center>Question #2</center></h1>
+                    <br>
+                    <div class="d-flex align-items-start bg-light mb-3" style="height: 100%; background-color: #F8DBC2!important;">
+                      <div class="col-md-1 radio-btn-group radio-btn-group-manual">
+                        <div class="form-check">
+                          <input class="form-check-input question-checkmark question-checkmark-manual" type="checkbox" value="" id="question-2-checkmark" onclick="return false" tabindex="-1"/>
+                          <label class="form-check-label" for="question-2-checkmark"></label>
+                        </div>
+                        <hr id="uneven-hr">
+                        <br>
+                        <div class="radio-btn radio-btn-manual first-radio-btn">
+                          <input class="form-check-input" type="radio" id="question-2-a-iscorrect" tabindex="2" />
+                        </div>
+                        <br>
+                        <div class="radio-btn radio-btn-manual">
+                          <input class="form-check-input" type="radio" id="question-2-b-iscorrect" tabindex="4" />
+                        </div>
+                        <br>
+                        <div class="radio-btn radio-btn-manual">
+                          <input class="form-check-input" type="radio" id="question-2-c-iscorrect" tabindex="6" />
+                        </div>
+                        <br>
+                        <div class="radio-btn radio-btn-manual">
+                          <input class="form-check-input" type="radio" id="question-2-d-iscorrect" tabindex="8" />
+                        </div>
+                        <br>
+                        <hr style="margin-top: .48rem;">
+                      </div>
+                      <div class="col-sm-11">
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-2" class="form-control input-manual question question-manual" required autocomplete="off" tabindex="1" />
+                          <label class="form-label" for="question-2">Question</label>
+                        </div>
+                        <hr>
+                        <br>
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-2-a" class="form-control input-manual answer-option-a" required autocomplete="off" tabindex="3" />
+                          <label class="form-label" for="question-2-a">Answer Option A</label>
+                        </div>
+                        <br>
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-2-b" class="form-control input-manual answer-option-b" required autocomplete="off" tabindex="5" />
+                          <label class="form-label" for="question-2-b">Answer Option B</label>
+                        </div>
+                        <br>
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-2-c" class="form-control input-manual answer-option-c" required autocomplete="off" tabindex="7" />
+                          <label class="form-label" for="question-2-c">Answer Option C</label>
+                        </div>
+                        <br>
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-2-d" class="form-control input-manual answer-option-d" required autocomplete="off" tabindex="9" />
+                          <label class="form-label" for="question-2-d">Answer Option D</label>
+                        </div>
+                        <br>
+                        <hr>
+                        <div class="question-point-value-container d-flex align-items-start mb-2">
+                          <div class="col">
+                            <div class="form-outline question-point-value">
+                              <input type="text" class="form-control" id="question-2-point-value" placeholder="0" required autocomplete="off">
+                              <label for="question-2-point-value" class="form-label">Point Value</label>
+                              <div class="valid-feedback">
+                                Looks good!
+                              </div>
+                              <div class="invalid-feedback">
+                                Must be a positive number.
+                              </div>
+                            </div>
+                          </div>
+                          <div class="delete-question-btn col">
+                            <button class="btn btn-danger" type="button" id="question-2-delete" onclick="deleteQuestion(this)">Delete Question</button>
+                          </div>
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="list-q3" role="tabpanel" aria-labelledby="list-q3-list">
+                    <h1><center>Question #3</center></h1>
+                    <br>
+                    <div class="d-flex align-items-start bg-light mb-3" style="height: 100%; background-color: #F8DBC2!important;">
+                      <div class="col-md-1 radio-btn-group radio-btn-group-manual">
+                        <div class="form-check">
+                          <input class="form-check-input question-checkmark question-checkmark-manual" type="checkbox" value="" id="question-3-checkmark" onclick="return false" tabindex="-1"/>
+                          <label class="form-check-label" for="question-3-checkmark"></label>
+                        </div>
+                        <hr id="uneven-hr">
+                        <br>
+                        <div class="radio-btn radio-btn-manual first-radio-btn">
+                          <input class="form-check-input" type="radio" id="question-3-a-iscorrect" tabindex="2" />
+                        </div>
+                        <br>
+                        <div class="radio-btn radio-btn-manual">
+                          <input class="form-check-input" type="radio" id="question-3-b-iscorrect" tabindex="4" />
+                        </div>
+                        <br>
+                        <div class="radio-btn radio-btn-manual">
+                          <input class="form-check-input" type="radio" id="question-3-c-iscorrect" tabindex="6" />
+                        </div>
+                        <br>
+                        <div class="radio-btn radio-btn-manual">
+                          <input class="form-check-input" type="radio" id="question-3-d-iscorrect" tabindex="8" />
+                        </div>
+                        <br>
+                        <hr style="margin-top: .48rem;">
+                      </div>
+                      <div class="col-sm-11">
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-3" class="form-control input-manual question question-manual" required autocomplete="off" tabindex="1" />
+                          <label class="form-label" for="question-3">Question</label>
+                        </div>
+                        <hr>
+                        <br>
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-3-a" class="form-control input-manual answer-option-a" required autocomplete="off" tabindex="3" />
+                          <label class="form-label" for="question-3-a">Answer Option A</label>
+                        </div>
+                        <br>
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-3-b" class="form-control input-manual answer-option-b" required autocomplete="off" tabindex="5" />
+                          <label class="form-label" for="question-3-b">Answer Option B</label>
+                        </div>
+                        <br>
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-3-c" class="form-control input-manual answer-option-c" required autocomplete="off" tabindex="7" />
+                          <label class="form-label" for="question-3-c">Answer Option C</label>
+                        </div>
+                        <br>
+                        <div class="form-outline form-outline-manual">
+                          <input type="text" id="question-3-d" class="form-control input-manual answer-option-d" required autocomplete="off" tabindex="9" />
+                          <label class="form-label" for="question-3-d">Answer Option D</label>
+                        </div>
+                        <br>
+                        <hr>
+                        <div class="question-point-value-container d-flex align-items-start mb-2">
+                          <div class="col">
+                            <div class="form-outline question-point-value">
+                              <input type="text" class="form-control" id="question-3-point-value" placeholder="0" required autocomplete="off">
+                              <label for="question-3-point-value" class="form-label">Point Value</label>
+                              <div class="valid-feedback">
+                                Looks good!
+                              </div>
+                              <div class="invalid-feedback">
+                                Must be a positive number.
+                              </div>
+                            </div>
+                          </div>
+                          <div class="delete-question-btn col">
+                            <button class="btn btn-danger" type="button" id="question-3-delete" onclick="deleteQuestion(this)">Delete Question</button>
+                          </div>
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="list-buttons" role="tabpanel" aria-labelledby="list-buttons-list"></div> <!-- empty because this section is only for the buttons -->
+                </div>
+              </div>
             </div>
           </div>
-        </li>
-      </form>
+        </div>
+      </li>
+    </form>
     </ul>
+
   </main>
+
+  <div class="modal fade" tabindex="-1" aria-labelledby="only-question-modal" aria-hidden="true" id="only-question-modal-container">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="only-question-modal">Invalid Operation</h5>
+          <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          You can't delete this question because it is the only question in the quiz.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-mdb-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" tabindex="-1" aria-labelledby="not-last-question-modal" aria-hidden="true" id="not-last-question-modal-container">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="not-last-question-modal">Invalid Operation</h5>
+          <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          This question cannot be deleted because it is not the question with the highest number.<br><br>
+
+          Questions in the middle of the quiz cannot be deleted.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-mdb-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

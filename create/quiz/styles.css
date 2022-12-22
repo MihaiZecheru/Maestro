@@ -31,4 +31,57 @@ textarea {
 
 #bottom-margin-20rem {
   padding-bottom: 20rem;
+  margin-top: 1rem;
+}
+
+#list-buttons-list {
+  display: flex;
+}
+
+#list-buttons-list > button {
+  width: 50%;
+}
+
+#submit {
+  margin-left: 1rem;
+}
+
+.question-checkmark {
+  margin-top: .5rem!important;
+}
+
+#uneven-hr {
+  margin-top: calc(1rem + (.32rem * 2))!important;
+}
+
+@media (min-width: 768px) {
+  .col-md-1 {
+    width: 3.33333333%!important;
+  }
+}
+
+/* center the first button */
+.first-radio-btn {
+  margin-top: calc(.5rem)!important;
+}
+
+.radio-btn {
+  margin-bottom: calc(.32rem * 2)!important;
+}
+
+#questions-container {
+  overflow-y: auto;
+  padding-right: 0;
+}
+
+.delete-question-btn,
+.delete-question-btn > button,
+.question-point-value,
+.question-point-value > input {
+  width: 100%!important;
+}
+
+.question-point-value,
+.delete-question-btn {
+  width: 97.5%!important
 }
