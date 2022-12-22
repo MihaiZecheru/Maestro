@@ -1,13 +1,24 @@
 export default class Question {
   constructor(question, a, b, c, d, correctAnswer) {
     this.question = question;
-    this.a = a; this.b = b;
-    this.c = c; this.d = d;
+    this.options = [a, b, c, d];
     this.correctAnswer = correctAnswer;
   }
 
-  getAnswers() {
-    return [this.a, this.b, this.c, this.d];
+  getOptionA() {
+    return this.options[0];
+  }
+
+  getOptionB() {
+    return this.options[1];
+  }
+
+  getOptionC() {
+    return this.options[2];
+  }
+
+  getOptionD() {
+    return this.options[3];
   }
 
   isCorrectAnswer(answer) {
