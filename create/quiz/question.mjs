@@ -1,7 +1,8 @@
 export default class Question {
-  constructor(question, a, b, c, d, correctAnswer) {
+  constructor(question, points, options, correctAnswer) {
     this.question = question;
-    this.options = [a, b, c, d];
+    this.points = points;
+    this.options = options;
     this.correctAnswer = correctAnswer;
   }
 
