@@ -48,7 +48,7 @@ nameBox.addEventListener('input', (e) => {
 pointValueBox.addEventListener('input', (e) => {
   const v = e.target.value;
 
-  if (/[^\d\.]/.test(v) || (v.match(/\./g) || []).length > 1 || v.startsWith('.') || v.endsWith('.')) {
+  if (/[^\d\.]/.test(v) || (v.match(/\./g) || []).length > 1 || v.startsWith('.') || v.endsWith('.') || !v) {
     setInvalid(e);
   } else {
     setValid(e);
