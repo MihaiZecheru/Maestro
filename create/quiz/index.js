@@ -11,6 +11,9 @@ const dateBox = document.getElementById('date');
 const addQuestion = document.getElementById('add-question');
 const submit = document.getElementById('submit');
 
+// initialize module selection box
+new mdb.Select(moduleBox);
+
 // disable past on datepicker
 new mdb.Datepicker(document.querySelector('.datepicker-disable-past'), {
   disablePast: true,

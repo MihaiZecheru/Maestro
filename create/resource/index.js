@@ -8,6 +8,9 @@ const body = document.getElementById('body');
 const moduleBox = document.getElementById('module');
 const submit = document.getElementById('submit');
 
+// initialize module selection box
+new mdb.Select(moduleBox);
+
 API.getModules().then((modules) => {
   // populate modules selector
   modules.forEach((module) => {

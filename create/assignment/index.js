@@ -12,7 +12,8 @@ const dateBox = document.getElementById('date');
 const submit = document.getElementById('submit');
 
 // initialize multiselect
-new mdb.Select(document.getElementById('submission-type'));
+new mdb.Select(submissionTypeBox);
+new mdb.Select(moduleBox);
 
 // disable past on datepicker
 new mdb.Datepicker(document.querySelector('.datepicker-disable-past'), {
