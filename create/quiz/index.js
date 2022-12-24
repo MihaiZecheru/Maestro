@@ -6,7 +6,6 @@ teacherOnly();
 const nameBox = document.getElementById('name');
 const descriptionBox = document.getElementById('description');
 const moduleBox = document.getElementById('module');
-const submissionTypeBox = document.getElementById('submission-type');
 const allowCommentsBox = document.getElementById('allow-comments');
 const dateBox = document.getElementById('date');
 const addQuestion = document.getElementById('add-question');
@@ -76,14 +75,6 @@ moduleBox.addEventListener('input', (e) => {
   }
 });
 
-submissionTypeBox.addEventListener('change', (e) => {
-  if (e.target.value) {
-    setValid(e);
-  } else {
-    setInvalid(e);
-  }
-});
-
 allowCommentsBox.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
@@ -143,12 +134,12 @@ Array.from(document.querySelectorAll('.question-point-value > input')).forEach((
 });
 
 submit.addEventListener('click', (e) => {
-  if (nameBox.classList.contains('is-invalid') || moduleBox.classList.contains('is-invalid') || descriptionBox.classList.contains('is-invalid') || submissionTypeBox.classList.contains('is-invalid') || dateBox.classList.contains('is-invalid')) {
+  if (nameBox.classList.contains('is-invalid') || moduleBox.classList.contains('is-invalid') || descriptionBox.classList.contains('is-invalid') || dateBox.classList.contains('is-invalid')) {
     e.preventDefault();
     return;
   }
 
-  if (!nameBox.value || !moduleBox.value || !submissionTypeBox.value || !dateBox.value) {
+  if (!nameBox.value || !moduleBox.value || !dateBox.value) {
     // don't prevent default otherwise the tooltip won't show
     return;
   }
@@ -250,7 +241,6 @@ submit.addEventListener('click', (e) => {
     points: totalPoints,
     module: moduleBox.value,
     description: descriptionBox.value,
-    submissionType: submissionTypeBox.value,
     due: dateBox.value,
     allowComments: allowCommentsBox.checked,
     questions
