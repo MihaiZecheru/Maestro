@@ -67,7 +67,7 @@ export default class API {
     await this.put(`/modules/${assignment.module}/pointsInModule`, (await this.get(`/modules/${assignment.module}/pointsInModule`)) + assignment.points);
 
     // add the assignment name to /assignmentNames/
-    await this.push(`/assignmentNames/${assignment.module}/`, assignment.name);
+    await this.post(`/assignmentNames/${assignment.module}/`, assignment.name);
 
     // create the assignment
     return await this.put(`/assignments/${assignment.module}/${uuid}`, assignment, false);
@@ -92,7 +92,7 @@ export default class API {
     await this.put(`/modules/${resource.module}/resourceCount`, (await this.get(`/modules/${resource.module}/resourceCount`)) + 1);
 
     // add the resource name to /resourceNames/
-    await this.push(`/resourceNames/${resource.module}/`, resource.name);
+    await this.post(`/resourceNames/${resource.module}/`, resource.name);
 
     // create the resource
     return await this.put(`/resources/${resource.module}/${uuid}`, resource, false);
@@ -115,7 +115,7 @@ export default class API {
     await this.put(`/modules/${quiz.module}/pointsInModule`, (await this.get(`/modules/${quiz.module}/pointsInModule`)) + quiz.points);
 
     // add the quiz name to /quizNames/
-    await this.push(`/quizNames/${quiz.module}/`, quiz.name);
+    await this.post(`/quizNames/${quiz.module}/`, quiz.name);
 
     // create the quiz
     return await this.put(`/quizzes/${quiz.module}/${uuid}`, quiz, false);
