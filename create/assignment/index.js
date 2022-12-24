@@ -153,7 +153,7 @@ submit.addEventListener('click', (e) => {
     description: descriptionBox.value,
     submissionType: submissionTypeBox.value,
     due: dateBox.value,
-    posted: new Date().toLocaleDateString(),
+    posted: new Date(Date.now()).toLocaleString(),
     allowComments: allowCommentsBox.checked,
   }).then((res) => {
     if (res.status === 200) {

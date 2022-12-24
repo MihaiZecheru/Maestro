@@ -107,7 +107,7 @@ submit.addEventListener('click', (e) => {
     module: moduleBox.value,
     description: body.value || "",
     url: url.value || "",
-    posted: new Date().toLocaleDateString()
+    posted: new Date(Date.now()).toLocaleString()
   }).then((res) => {
     if (res.status === 200) {
       window.location.href = '/dashboard/';

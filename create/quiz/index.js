@@ -242,7 +242,7 @@ submit.addEventListener('click', (e) => {
     module: moduleBox.value,
     description: descriptionBox.value,
     due: dateBox.value,
-    posted: new Date().toLocaleDateString(),
+    posted: new Date(Date.now()).toLocaleString(),
     allowComments: allowCommentsBox.checked,
     questions
   }).then((res) => {
