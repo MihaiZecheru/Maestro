@@ -134,7 +134,7 @@ submit.addEventListener('click', (e) => {
     return;
   }
 
-  if (!nameBox.value || !pointValueBox.value || !moduleBox.value || !!mdb.Select.getInstance(submissionTypeBox).value.length || !dateBox.value) {
+  if (!nameBox.value || !pointValueBox.value || !moduleBox.value || !mdb.Select.getInstance(submissionTypeBox).value.length || !dateBox.value) {
     // don't prevent default otherwise the tooltip won't show
     return;
   }
