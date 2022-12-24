@@ -70,6 +70,7 @@ header > * {
 
 #create-dropdown {
   position: fixed;
+  z-index: 999!important;
   left: 1em;
   top: calc((var(--header-height) - 2.25em) / 2); /* center it */
   background-color: #333;
