@@ -1,0 +1,16 @@
+#accordion-parent {
+  margin-left: 22.5rem!important;
+  margin-right: 2.5rem!important;
+  margin-top: 2.5rem!important;
+  margin-bottom: 2.5rem!important;
+}
+
+nav {
+  margin-top: var(--header-height);
+  height: calc(100vh - var(--header-height))!important;
+  width: 20rem!important;
+}
+
+.sidenav {
+  z-index: 998!important; /* one less than the dropdown */
+}
