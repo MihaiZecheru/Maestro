@@ -78,14 +78,6 @@ descriptionBox.addEventListener('input', (e) => {
   }
 });
 
-submissionTypeBox.addEventListener('change', (e) => {
-  if (e.target.value) {
-    setValid(e);
-  } else {
-    setInvalid(e);
-  }
-});
-
 allowCommentsBox.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
@@ -133,12 +125,12 @@ datetimeBtn.addEventListener('click', () => {
 });
 
 submit.addEventListener('click', (e) => {
-  if (nameBox.classList.contains('is-invalid') || pointValueBox.classList.contains('is-invalid') || moduleBox.classList.contains('is-invalid') || descriptionBox.classList.contains('is-invalid') || submissionTypeBox.classList.contains('is-invalid') || dateBox.classList.contains('is-invalid')) {
+  if (nameBox.classList.contains('is-invalid') || pointValueBox.classList.contains('is-invalid') || moduleBox.classList.contains('is-invalid') || descriptionBox.classList.contains('is-invalid') || dateBox.classList.contains('is-invalid')) {
     e.preventDefault();
     return;
   }
 
-  if (!nameBox.value || !pointValueBox.value || !moduleBox.value || !submissionTypeBox.value || !dateBox.value) {
+  if (!nameBox.value || !pointValueBox.value || !moduleBox.value || !!mdb.Select.getInstance(submissionTypeBox).value.length || !dateBox.value) {
     // don't prevent default otherwise the tooltip won't show
     return;
   }
@@ -151,7 +143,7 @@ submit.addEventListener('click', (e) => {
     points: parseInt(pointValueBox.value),
     module: moduleBox.value,
     description: descriptionBox.value,
-    submissionType: submissionTypeBox.value,
+    submissionType: mdb.Select.getInstance(submissionTypeBox).value.join('&'),
     due: dateBox.value,
     posted: new Date(Date.now()).toLocaleString(),
     allowComments: allowCommentsBox.checked,
@@ -172,3 +164,4 @@ submit.addEventListener('keydown', (e) => {
 });
 
 nameBox.focus();
+new mdb.Select(document.getElementById('submission-type'));

@@ -105,15 +105,10 @@
         </div>
         <div class="col-md-3">
           <label for="submission-type" class="form-label">Submission Types</label>
-          <select class="form-select" id="submission-type" required>
-            <option selected disabled value="">...</option>
-            <option value="txt">Text</option>
-            <option value="lnk">Link</option>
-            <option value="f">File</option>
-            <option value="txt&lnk">Text & Link</option>
-            <option value="txt&f">Text & File</option>
-            <option value="lnk&f">Link & File</option>
-            <option value="txt&lnk&f">Text & Link & File</option>
+          <select class="form-select" id="submission-type" required multiple>
+            <option value="txt" data-mdb-icon="/static/txt.png">Text</option>
+            <option value="lnk" data-mdb-icon="https://cdn.iconscout.com/icon/free/png-256/link-simple-horizontal-3602781-3004355.png">Link</option>
+            <option value="f" data-mdb-icon="/static/file.png">File</option>
           </select>
           <div class="valid-feedback">
             Looks good!

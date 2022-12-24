@@ -27,3 +27,8 @@ textarea {
 textarea {
   height: 2.5rem;
 }
+
+/* this is the 'submission-type' box */
+input.form-control.select-input.placeholder-active {
+  background: #fff!important;
+}
