@@ -6,6 +6,13 @@ export function uuid4() {
   });
 }
 
+const pfps = {
+  'Chrissy': '/static/chris.png',
+  'TJ': '/static/tj.png',
+  'wybitty': '/static/wyatt.png',
+  'RahukE': '/static/rahul.png'
+};
+
 export default class API {
   static baseURL = 'https://codeclass-51eae-default-rtdb.firebaseio.com/';
 
@@ -119,5 +126,20 @@ export default class API {
 
     // create the quiz
     return await this.put(`/quizzes/${quiz.module}/${uuid}`, quiz, false);
+  }
+
+  static async submitComment(username, postId, commentBody) {
+    if (username === 'TJ') username = 'Theordore Junior';
+    if (username === 'wybitty') username = 'Wyatt Gaston'; // TODO: ERROR HANDLING FOR THIS FUNC. just have a modal popup or something
+    
+    const comment = {
+      body: commentBody,
+      author: username,
+      posted: new Date(Date.now()).toLocaleDateString(),
+      pfp: pfps[username]
+    }
+
+    await this.post(`/comments/${postId}`, comment);
+    return comment;
   }
 }
