@@ -11,6 +11,9 @@ const allowCommentsBox = document.getElementById('allow-comments');
 const dateBox = document.getElementById('date');
 const submit = document.getElementById('submit');
 
+// initialize multiselect
+new mdb.Select(document.getElementById('submission-type'));
+
 // disable past on datepicker
 new mdb.Datepicker(document.querySelector('.datepicker-disable-past'), {
   disablePast: true,
@@ -164,4 +167,3 @@ submit.addEventListener('keydown', (e) => {
 });
 
 nameBox.focus();
-new mdb.Select(document.getElementById('submission-type'));
