@@ -39,7 +39,7 @@ function setValid(e) {
 }
 
 nameBox.addEventListener('input', (e) => {
-  if (/[^\w\s]/.test(e.target.value) || !e.target.value) {
+  if (/[^\w\-\s]/.test(e.target.value) || !e.target.value) {
     setInvalid(e);
   } else {
     setValid(e);
