@@ -14,3 +14,83 @@ nav {
 .sidenav {
   z-index: 998!important; /* one less than the dropdown */
 }
+
+.child-information {
+  margin-left: .5rem!important;
+  margin-right: .5rem!important;
+}
+
+.child-right-icons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  margin-right: 5rem;
+}
+
+.child-right-icons > div {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.child-right-icons > div > .badge {
+  margin-left: 1rem;
+}
+
+textarea {
+  resize: none!important;
+  height: 5rem!important;
+  margin-top: 1rem!important;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+textarea::-webkit-scrollbar,
+.comments::-webkit-scrollbar {
+  display: none;
+}
+
+.comments {
+  max-height: 20rem;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.is-submitted-btn {
+  width: 74%;
+}
+
+img {
+  max-width: 1.5rem;
+  height: auto;
+}
+
+.comment {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: .5rem;
+}
+
+.comment-header {
+  margin-bottom: .5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-author {
+  margin-left: .25rem;
+}
+
+.comment-body {
+  font-size: .9rem;
+}
+
+.post-description {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  white-space: normal;
+}

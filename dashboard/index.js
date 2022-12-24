@@ -40,7 +40,6 @@ function populateAccordion(assignmentsQuizzesAndResources) {
 
   const accordion = document.getElementById('accordion');
   assignmentsQuizzesAndResources.reduce(async (acc, post) => {
-    const uuid = post.id;
     console.log(post);
 
     if (post.type === 'assignment') {
@@ -63,27 +62,7 @@ function populateAccordion(assignmentsQuizzesAndResources) {
       }
 
       // get comments
-      const comments = await API.get(`/comments/assignments/${post.id}/`) || [{
-        body: 'Test comment',
-        author: 'Chris',
-        posted: '12/23/22',
-        pfp: '/static/chris.png',
-      }, {
-        body: 'Very COOL comment',
-        author: 'RahukE',
-        posted: '12/24/22',
-        pfp: '/static/rahul.png',
-      }, {
-        body: 'My name is wyatt i am a cute elf',
-        author: 'Wyatt',
-        posted: '12/25/22',
-        pfp: '/static/wyatt.png',
-      }, {
-        body: 'My mile time it 8:36',
-        author: 'Theodore Junior',
-        posted: '12/25/22',
-        pfp: '/static/tj.png',
-     } ];
+      const comments = Object.values(await API.get(`/comments/${post.id}/`) || []);
 
       return (await acc) + `
         <div class="accordion-item" data-uuid="${post.id}">
@@ -163,6 +142,9 @@ function populateAccordion(assignmentsQuizzesAndResources) {
                             </div>`
                         }).join('')
                       }
+                      <div style="width: 100%; position: sticky; bottom: 0; display: flex; justify-content: center;">
+                        <i class="fas fa-arrow-down fa-2x"></i>
+                      </div>
                   </div>
                 </div>
               </div>
@@ -181,26 +163,36 @@ function populateAccordion(assignmentsQuizzesAndResources) {
   }, '').then((HTML) => {
     // populate accordion
     accordion.innerHTML = HTML;
-    document.getElementById(`comment-box-${post.id}`).addEventListener('keydown', (e) => {
-      if (e.shiftKey && e.key === 'Enter') {
-        // post to database
-        API.submitComment(getCookie('token'), getCookie('cc-username'), post.id, document.getElementById(`comment-box-${post.id}`).value).then((comment) => {
-          // update comments
-          document.getElementById(`comments-${post.id}`).innerHTML += `
-            <div class="comment shadow-4">
-              <div class="comment-header">
-                <div>
-                  <img src="${comment.pfp}" class="rounded-circle" alt="pfp" />
-                  <span class="comment-author">${comment.author}</span>
+    assignmentsQuizzesAndResources.forEach((post) => {
+      try {
+        document.getElementById(`comment-box-${post.id}`).addEventListener('keydown', (e) => {
+          const commentBox = document.getElementById(`comment-box-${post.id}`);
+
+          if (commentBox.value.trim() && e.shiftKey && e.key === 'Enter') {
+            e.preventDefault();
+
+            // post to database
+            API.submitComment(getCookie('cc-username'), post.id, commentBox.value.trim()).then((comment) => {
+              commentBox.value = '';
+
+              // update comments
+              document.getElementById(`comments-${post.id}`).innerHTML += `
+                <div class="comment shadow-4">
+                  <div class="comment-header">
+                    <div>
+                      <img src="${comment.pfp}" class="rounded-circle" alt="pfp" />
+                      <span class="comment-author">${comment.author}</span>
+                    </div>
+                    <span class="comment-date badge rounded-pill badge-secondary">${comment.posted}</span>
+                  </div>
+                <div class="comment-body">
+                  ${comment.body}
                 </div>
-                <span class="comment-date badge rounded-pill badge-secondary">${comment.posted}</span>
-              </div>
-            <div class="comment-body">
-              ${comment.body}
-            </div>
-          </div>`;
+              </div>`;
+            });
+          }
         });
-      }
+      } catch (e) {};
     });
   });
 }
