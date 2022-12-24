@@ -2,6 +2,7 @@
 
 :root {
   --header-height: 50px;
+  --background-color: #F8DBC2;
 }
 
 * {
@@ -12,7 +13,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #F8DBC2;
+  background-color: var(--background-color);
   overflow-x: hidden;
 }
 
