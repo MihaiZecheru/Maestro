@@ -67,7 +67,8 @@ submit.addEventListener('click', (e) => {
     assignmentCount: 0,
     quizCount: 0,
     resourceCount: 0,
-    pointsInModule: 0
+    pointsInModule: 0,
+    posted: new Date(Date.now()).toLocaleString()
   }).then((res) => {
     if (res.status === 200) {
       window.location.href = '/dashboard/';
