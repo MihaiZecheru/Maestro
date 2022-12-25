@@ -10,7 +10,9 @@ const pfps = {
   'Chrissy': '/static/chris.png',
   'TJ': '/static/tj.png',
   'wybitty': '/static/wyatt.png',
-  'RahukE': '/static/rahul.png'
+  'RahukE': '/static/rahul.png',
+  'Maruabb': '/static/maruabb.png',
+  'Jainaldo': '/static/jainaldo.png'
 };
 
 export default class API {
