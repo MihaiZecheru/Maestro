@@ -1,6 +1,6 @@
 import API from '/api.mjs';
 import { getUsername } from '/auth.mjs';
-
+// TODO: GET TOTAL NUMBER OF ASSIGNMENTS / QUIZZES / POINTS ETC. AND DISPLAY THE USER'S STATS AS X/Y
 let password;
 
 API.get('/users/' + getUsername()).then((user) => {
@@ -14,7 +14,12 @@ API.get('/users/' + getUsername()).then((user) => {
   } else {
     document.getElementById('rank').innerHTML = user.rank;
     document.getElementById('points').innerHTML = user.points;
-    document.getElementById('completed').innerHTML = user.completed;
+    document.getElementById('completed').innerHTML = `
+      <ul>
+        <li>Assignments: ${user.completed.assignments}</li>
+        <li>Quizzes: ${user.completed.quizzes}</li>
+      </ul>
+    `;
   }
 });
 

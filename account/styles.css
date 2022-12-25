@@ -26,3 +26,8 @@ main > div {
 #username {
   font-weight: 400;
 }
+
+li {
+  margin-left: 2rem;
+  font-weight: 400;
+}
