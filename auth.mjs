@@ -32,6 +32,6 @@ export async function teacherOnly() {
   }
 }
 
-export async function isTeacher() {
+export function isTeacher() {
   return loggedIn() && getCookie('cc-isteacher');
 }
