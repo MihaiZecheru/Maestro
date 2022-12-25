@@ -110,3 +110,33 @@ img {
 .popout {
   animation: pop-out 1.5s ease;
 }
+
+.fa-arrow-down {
+  cursor: pointer;
+}
+
+.post-desc-and-rating {
+  position: relative; 
+}
+
+.star-ratings {
+  display: inline-block;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}
+
+.star-ratings > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.star-ratings > div > i.fa-question-circle {
+  margin-right: .5rem;
+  cursor: pointer;
+}
+
+.star-ratings > div > span.badge {
+  margin-right: .5rem;
+}

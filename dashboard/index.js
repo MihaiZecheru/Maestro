@@ -6,6 +6,7 @@ import API, { uuid4 } from '/api.mjs';
 // <i class="fas fa-bong fa-lg me-2 opacity-70"></i>
 
 let moduleChildren = {};
+let popovers = [];
 
 class comment_cooldown {
   static cooldown_time = 1000 * 90; // 1 minute 30 seconds
@@ -37,6 +38,60 @@ function checkForFinish(totalModules, _res) {
       }
     }, 1);
   });
+}
+
+async function updateComments(post_id) {
+  window.last_comment_update = Date.now();
+  const comments = Object.values(await API.get(`/comments/${post_id}/`) || []);
+  const uuid = uuid4();
+
+  document.getElementById(`comments-${post_id}`).innerHTML = `
+    ${
+      comments.map((comment, i) => {
+        return `
+          <div class="comment shadow-4" ${(i === comments.length - 1) ? `id="comment-${uuid}"` : ""}>
+            <div class="comment-header">
+              <div>
+                <img src="${comment.pfp}" class="rounded-circle" alt="pfp" />
+                <span class="comment-author">${comment.author}</span>
+              </div>
+              <span class="comment-date badge rounded-pill badge-secondary">${comment.posted}</span>
+            </div>
+            <div class="comment-body">
+              ${comment.body}
+            </div>
+          </div>`
+      }).join('')
+    }
+    <!-- down arrow icon -->
+    <div id="scrollToView-${post_id}" style="width: 100%; position: sticky; bottom: 0; display: flex; justify-content: center;"><i class="fas fa-arrow-down fa-2x" id="comment-arrow-${post_id}"></i></div>
+  `;
+
+  document.getElementById(`scrollToView-${post_id}`).scrollIntoView();
+  const comment_ele = document.getElementById(`comment-${uuid}`);
+  comment_ele.scrollIntoView();
+  comment_ele.classList.add('popout');
+
+  document.getElementById(`comment-arrow-${post_id}`).addEventListener('click', () => {
+    comment_ele.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  setTimeout(() => {
+    comment_ele.classList.remove('popout');
+  }, 1500);
+}
+
+async function checkForNewComments(post_id) {
+  setInterval(() => {
+    API.get(`/recent_comment/${post_id}/`).then((posted_on) => {
+      if (posted_on) {
+        if (new Date(posted_on) > window.last_comment_update) {
+          // new comment
+          updateComments(post_id);
+        }
+      }
+    });
+  }, 7500);
 }
 
 function populateAccordion(assignmentsQuizzesAndResources, _res) {
@@ -97,6 +152,17 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
           // get comments
           const comments = Object.values(await API.get(`/comments/${post.id}/`) || []);
 
+          // get the average rating for the post
+          const avg_rating = await API.get(`/ratings/${post.id}`).then((response) => {
+            const get_average = arr => arr.reduce((a, b) => a + b) / arr.length;
+
+            if (!response) {
+              return 0;
+            }
+
+            return get_average(Object.values(response));
+          });
+
           return (await acc) + `
             <div class="accordion-item" data-uuid="${post.id}">
               <h2 class="accordion-header" id="heading${post.id}">
@@ -126,12 +192,35 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
               <div id="collapse${post.id}" class="accordion-collapse collapse" aria-labelledby="heading${post.id}"
                 data-mdb-parent="#accordion">
                 <div class="accordion-body row">
-                  <div class="col-4">
+                  <div class="col-4 post-desc-and-rating">
                     <div class="post-description">
-                      ${post.description}
+                      <p>${post.description}</p>
                     </div>
                     <div class="star-ratings">
-                        asdasdd
+                      <div>
+                        ${
+                          getCookie('cc-isteacher')
+                          ? `<span class="disable-highlighting badge badge-${(avg_rating >= 4.5) ? 'success' : (avg_rating >= 3.0) ? 'primary' : 'danger'}">${avg_rating}</span>`
+                          : `<i class="far fa-question-circle" id="popover-${post.id}" data-mdb-toggle="popover" title="Ratings" data-mdb-content="Give this post a rating. Would you want to see a post like this again?"></i>`
+                        }
+                        <ul class="rating" data-mdb-toggle="rating" ${getCookie('cc-isteacher') ? `data-mdb-value="${avg_rating}" style="cursor: default!important;"` : ''} id="rating-${post.id}">
+                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                            <i class="far fa-star fa-sm text-primary" title="Bad"></i>
+                          </li>
+                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                            <i class="far fa-star fa-sm text-primary" title="Poor"></i>
+                          </li>
+                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                            <i class="far fa-star fa-sm text-primary" title="OK"></i>
+                          </li>
+                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                            <i class="far fa-star fa-sm text-primary" title="Good"></i>
+                          </li>
+                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                            <i class="far fa-star fa-sm text-primary" title="Excellent"></i>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                   <div class="col-6">
@@ -156,7 +245,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                       <div class="row">
                         <div class="col-6">
                           <textarea class="form-control" id="comment-box-${post.id}" placeholder="Add a comment" autocomplete="off"></textarea>
-                          <label for="comment-box" class="form-label">Shift + Enter to submit <span class="badge rounded-pill badge-primary ms-2">${comments.length}</span></label>
+                          <label for="comment-box" class="form-label">Shift + Enter to submit <span class="badge rounded-pill badge-primary ms-2" id="comments-count-${post.id}">${comments.length}</span></label>
                         </div>
                       </div>
                     </div>
@@ -181,7 +270,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                             }).join('')
                           }
                           <!-- down arrow icon -->
-                          <div style="width: 100%; position: sticky; bottom: 0; display: flex; justify-content: center;"><i class="fas fa-arrow-down fa-2x"></i></div>
+                          <div style="width: 100%; position: sticky; bottom: 0; display: flex; justify-content: center;"><i class="fas fa-arrow-down fa-2x" id="comment-arrow-${post.id}"></i></div>
                       </div>
                     </div>
                   </div>
@@ -200,7 +289,49 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
     }, '').then((HTML) => {
       // populate accordion
       accordion.innerHTML = HTML;
+
+      window.last_comment_update = Date.now();
       assignmentsQuizzesAndResources.forEach((post) => {
+        try {
+          if (getCookie('cc-isteacher')) {
+            new mdb.Rating(document.getElementById(`rating-${post.id}`), { readonly: true });
+          } else {
+            // rating
+            API.get(`/ratings/${post.id}/${getCookie('token')}`).then((rating) => {
+              new mdb.Rating(document.getElementById(`rating-${post.id}`), { readonly: false, value: rating || 0 });
+              document.getElementById(`rating-${post.id}`).addEventListener('click', () => {
+                // get rating
+                const stars = mdb.Rating.getInstance(document.getElementById(`rating-${post.id}`))._index + 1;
+                
+                // update rating
+                API.put(`/ratings/${post.id}/${getCookie('token')}`, stars);
+              });
+            });
+
+            // popover
+            document.getElementById(`popover-${post.id}`).addEventListener('click', () => {
+              if (!popovers[post.id]) {
+                new mdb.Popover(document.getElementById(`popover-${post.id}`), { placement: 'top' }).show();
+                popovers[post.id] = true;
+              } else {
+                mdb.Popover.getInstance(document.getElementById(`popover-${post.id}`)).dispose();
+                popovers[post.id] = false;
+              }
+            });
+          }
+        } catch (e) {};
+
+        try {
+          // listen for new comments
+          checkForNewComments(post.id);
+        } catch (e) {};
+
+        try {
+          document.getElementById(`comment-arrow-${post.id}`).addEventListener('click', () => {
+            document.querySelector(`#comments-${post.id} > div:nth-last-child(2)`).scrollIntoView({ behavior: 'smooth' });
+          });
+        } catch (e) {};
+
         try {
           document.getElementById(`comment-box-${post.id}`).addEventListener('keydown', (e) => {
             const commentBox = document.getElementById(`comment-box-${post.id}`);
@@ -239,7 +370,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                 commentBox.value = '';
 
                 // update comments                                            this is the down arrow icon
-                ele.innerHTML = ele.innerHTML.substring(0, ele.innerHTML.indexOf('<div style="width: 100%; position: sticky; bottom: 0; display: flex; justify-content: center;"><i class="fas fa-arrow-down fa-2x"></i></div>')) + `
+                ele.innerHTML = ele.innerHTML.substring(0, ele.innerHTML.indexOf(`<div style="width: 100%; position: sticky; bottom: 0; display: flex; justify-content: center;"><i class="fas fa-arrow-down fa-2x" id="comment-arrow-${post.id}"></i></div>`)) + `
                   <div class="comment shadow-4" id="${`comment-${uuid}`}">
                     <div class="comment-header">
                       <div>
@@ -253,13 +384,26 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                   </div>
                 </div>
                 <!-- down arrow icon -->
-                <div id="scrollToView" style="width: 100%; position: sticky; bottom: 0; display: flex; justify-content: center;"><i class="fas fa-arrow-down fa-2x"></i></div>`;
+                <div id="scrollToView-${post.id}" style="width: 100%; position: sticky; bottom: 0; display: flex; justify-content: center;"><i class="fas fa-arrow-down fa-2x" id="comment-arrow-${post.id}"></i></div>`;
               
-              // ele.parentElement.scrollTo(0, ele.parentElement.scrollHeight);
-              document.getElementById('scrollToView').scrollIntoView();
+              // update comments count
+              document.getElementById(`comments-count-${post.id}`).innerText = parseInt(document.getElementById(`comments-count-${post.id}`).innerText) + 1;
+
+              // notify all clients of new comment
+              API.put(`/recent_comment/${post.id}/`, Date.now()).then(() => {
+                // prevent update from being detected as new comment
+                window.last_comment_update = Date.now();
+              });
+
+              document.getElementById(`scrollToView-${post.id}`).scrollIntoView();
               const comment_ele = document.getElementById(`comment-${uuid}`);
               comment_ele.scrollIntoView();
               comment_ele.classList.add('popout');
+
+              document.getElementById(`comment-arrow-${post.id}`).addEventListener('click', () => {
+                comment_ele.scrollIntoView({ behavior: 'smooth' });
+              });
+
               setTimeout(() => {
                 comment_ele.classList.remove('popout');
               }, 1500);
@@ -282,7 +426,7 @@ new Promise((_res) => {
     const sidenavContainer = document.getElementById('nav-body');
 
     // sort by date posted
-    let modules = Array.from(Object.values(_modules)).sort((a, b) => new Date(a.posted) - new Date(b.posted));
+    let modules = Array.from(Object.values(_modules)).sort((a, b) => new Date(a.posted) - new Date(b.posted))//TODO:.reverse(); make sure to add the .reverse back because the modules should be in order of most receltly posted
     checkForFinish(modules.length, _res);
 
     modules.forEach((module, i) => {
@@ -427,6 +571,9 @@ new Promise((_res) => {
 
         // add the event listener to the sidenav-item
         sidenavModule.addEventListener('click', (e) => {
+          if (window.activeModule === module.name) return;
+          else window.activeModule = module.name;
+          
           const i = sidenavModule.querySelector('i');
 
           // check if the module children already exist

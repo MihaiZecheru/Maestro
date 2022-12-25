@@ -44,6 +44,24 @@
     </div>
   </header>
 
+  <div
+    class="toast fade"
+    id="cooldown-warning" 
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+    data-mdb-color="warning"
+    data-mdb-autohide="false"
+  >
+    <div class="toast-header">
+      <i class="fas fa-exclamation-triangle fa-lg me-2"></i>
+      <strong class="me-auto">Comment Cooldown</strong>
+      <small>Now</small>
+      <button type="button" class="btn-close" data-mdb-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">Commen cooldown enabled (<span id="cooldown-time"></span>s remaining)</div>
+  </div>
+
   <main>
     <!-- Sidenav -->
     <nav
