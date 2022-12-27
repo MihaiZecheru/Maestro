@@ -156,5 +156,24 @@
     </div>
   </div>
 
+  <div
+    class="toast fade"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+    data-mdb-color="secondary"
+    data-mdb-position="top-right"
+    data-mdb-autohide="false"
+    data-mdb-stacking="true"
+    id="new-comment-toast"
+  >
+    <div class="toast-header">
+      <strong class="me-auto">New Comment</strong>
+      <small id="new-comment-toast-time">11 mins ago</small>
+      <button type="button" class="btn-close" data-mdb-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body"><span id="new-comment-toast-author-name" class="tag"></span> commented on a post titled "<span id="new-comment-toast-post-title"></span>" under the "<span id="new-comment-toast-module-name"></span>" module.<span id="mentioned-people" class="visually-hidden"><br><br>The following people were mentioned: </span><span id="new-comment-toast-mentions"></span></div>
+  </div>
+
 </body>
 </html>

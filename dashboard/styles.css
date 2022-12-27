@@ -291,3 +291,16 @@ img {
 .file-submission > label {
   padding-bottom: .3rem;
 }
+
+.mention {
+  background-color: #e6f3ff;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.tag {
+  /* darker than the .mention background color */
+  background-color: #7aa4e6;
+  border-radius: 5px;
+  padding: 5px;
+}

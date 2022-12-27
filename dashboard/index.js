@@ -27,6 +27,21 @@ let submission_info = {};
 let current_submission_type = {};
 let submissions = {};
 
+function parseMentions(text) {
+  text = (text + ' ').replaceAll(/\s@Chrissy\s/g, ' <span class="mention">@Chrissy</span> ')
+    .replaceAll(/\s@Wyatt Gaston\s/g, ' <span class="mention">@Wyatt Gaston</span> ')
+    .replaceAll(/\s@RahukE\s/g, ' <span class="mention">@RahukE</span> ')
+    .replaceAll(/\s@Theodore Junior\s/g,  '<span class="mention">@Theodore Junior</span> ')
+    .replaceAll(/\s@Maruabb\s/g, ' <span class="mention">@Maruabb</span> ')
+    .replaceAll(/\s@Jainaldo\s/g, ' <span class="mention">@Jainaldo</span> ');
+
+  return text.substring(0, text.length - 1);
+}
+
+function getMentions(text) {
+  return parseMentions(text).match(/<span class="mention">@(.*?)<\/span>/g).map((mention) => mention.replace(/<span class="mention">@(.*?)<\/span>/g, '@$1'));
+}
+
 class comment_cooldown {
   static cooldown_time = 1000 * 90; // 1 minute 30 seconds
   static cooldown_over_at = {};
@@ -103,10 +118,29 @@ async function updateComments(post_id) {
 async function checkForNewComments(post_id) {
   setInterval(() => {
     API.get(`/recent_comment/${post_id}/`).then((posted_on) => {
+
       if (posted_on) {
         if (new Date(posted_on) > window.last_comment_update) {
           // new comment
           updateComments(post_id);
+
+          API.get(`/recent_comment_info/${post_id}/`).then(({ author, post_title, mentions, module }) => {
+            // show snackbar saying there is a new comment
+            document.getElementById('new-comment-toast-time').innerText = ((new Date() - posted_on) / 1000).toFixed(2) + ' seconds ago';
+            document.getElementById('new-comment-toast-author-name').innerText = '@' + author;
+            document.getElementById('new-comment-toast-post-title').innerText = post_title;
+            document.getElementById('new-comment-toast-module-name').innerText = module;
+
+            if (mentions) {
+              document.getElementById('new-comment-toast-mentions').innerHTML = mentions.reduce((acc, mention) => { return acc + `<span class="tag">${mention}</span>, ` }, '').slice(0, -2);
+              document.getElementById('mentioned-people').classList.remove("visually-hidden");
+            } else {
+              document.getElementById('new-comment-toast-mentions').innerHTML = '';
+              document.getElementById('mentioned-people').classList.add("visually-hidden");
+            }
+
+            new mdb.Toast(document.getElementById('new-comment-toast')).show();
+          });
         }
       }
     });
@@ -274,7 +308,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                     <div> <!-- row for the comment section -->
                       <div class="row">
                         <div class="col-6">
-                          <textarea class="form-control" id="comment-box-${post.id}" placeholder="Add a comment" autocomplete="off"></textarea>
+                          <textarea class="form-control mention" id="comment-box-${post.id}" placeholder="Add a comment" autocomplete="off"></textarea>
                           <label for="comment-box" class="form-label">Shift + Enter to submit <span class="badge rounded-pill badge-primary ms-2" id="comments-count-${post.id}">${comments.length}</span></label>
                         </div>
                       </div>
@@ -322,6 +356,20 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
 
       window.last_comment_update = Date.now();
       assignmentsQuizzesAndResources.forEach((post) => {
+        try {
+          new Mention(document.getElementById(`comment-box-${post.id}`), {
+            showImg: true,
+            items: [
+              { name: 'Chrissy', username: 'Chrissy', image: '/static/chris.png' },
+              { name: 'Wyatt Gaston', username: 'Wyatt Gaston', image: '/static/wyatt.png' },
+              { name: 'RahukE', username: 'RahukE', image: '/static/rahul.png' },
+              { name: 'Theodore Junior', username: 'Theodore Junior', image: '/static/tj.png' },
+              { name: 'Jainaldo', username: 'Jainaldo', image: '/static/jainaldo.png' },
+              { name: 'Maruabb', username: 'Maruabb', image: '/static/maruabb.png' },
+            ],
+          });
+        } catch (e) {};
+        
         try {
           const btn = document.getElementById(`is-submitted-btn-${post.id}`);
           new mdb.Dropdown(btn);
@@ -704,7 +752,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
               comment_cooldown.start(post.id);
 
               // post to database
-              API.submitComment(getUsername(), post.id, commentBox.value.trim().replaceAll(/\n/g, "<br>").replaceAll(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")).then((comment) => {
+              API.submitComment(getUsername(), post.id, parseMentions(commentBox.value.trim().replaceAll(/\n/g, "<br>").replaceAll(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;"))).then((comment) => {
                 const ele = document.getElementById(`comments-${post.id}`);
                 const uuid = uuid4();
                 commentBox.value = '';
@@ -733,6 +781,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
               API.put(`/recent_comment/${post.id}/`, Date.now()).then(() => {
                 // prevent update from being detected as new comment
                 window.last_comment_update = Date.now();
+                API.put(`/recent_comment_info/${post.id}/`, { author: getUsername(), post_title: post.name, mentions: getMentions(comment.body), module: post.module });
               });
 
               document.getElementById(`scrollToView-${post.id}`).scrollIntoView();
