@@ -38,7 +38,7 @@ document.getElementById('show-password').addEventListener('keydown', (e) => {
 document.getElementById('password').addEventListener('keydown', (e) => {
   const ele = document.getElementById('password');
   const newPassword = ele.value;
-  console.log(e.key, newPassword)
+
   if (e.key === 'Enter' && newPassword !== password) {
     API.put(`/users/${getUsername()}/password`, newPassword).then(() => {
       ele.value = password;
