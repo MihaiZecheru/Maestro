@@ -1,5 +1,5 @@
-import API from '/api.mjs';
-import { getUsername } from '/auth.mjs';
+import API from '../../api.mjs';
+import { getUsername } from '../../auth.mjs';
 // TODO: GET TOTAL NUMBER OF ASSIGNMENTS / QUIZZES / POINTS ETC. AND DISPLAY THE USER'S STATS AS X/Y
 let password;
 

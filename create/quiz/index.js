@@ -1,6 +1,6 @@
-import { teacherOnly } from '/auth.mjs';
+import { teacherOnly } from '../../auth.mjs';
 import Question from './question.mjs';
-import API from '/api.mjs';
+import API from '../../api.mjs';
 
 teacherOnly();
 const nameBox = document.getElementById('name');

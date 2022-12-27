@@ -1,5 +1,5 @@
-import { teacherOnly } from '/auth.mjs';
-import API from '/api.mjs';
+import { teacherOnly } from '../../auth.mjs';
+import API from '../../api.mjs';
 
 teacherOnly();
 const nameBox = document.getElementById('name');
