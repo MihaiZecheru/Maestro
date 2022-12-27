@@ -3,7 +3,6 @@ import { login } from '/auth.mjs';
 document.getElementById('submit').addEventListener('click', async () => {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
-  console.log('object');
 
   await login(username, password).then((success) => {
     if (success) {
