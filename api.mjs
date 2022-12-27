@@ -19,7 +19,7 @@ export default class API {
   static baseURL = 'https://codeclass-51eae-default-rtdb.firebaseio.com/';
 
   static URL(path = '') {
-    return (this.baseURL + path + '.json').replaceAll('//', '/').replace('/.json', '.json');
+    return (this.baseURL + path + '.json').replaceAll('//', '/').replace('/.json', '.json').replace('https:/', 'https://');
   }
 
   static async get(path) {
