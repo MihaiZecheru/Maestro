@@ -1,5 +1,21 @@
-import { getCookie } from '/cookies.mjs';
+import { ref, getStorage, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import API, { uuid4 } from '/api.mjs';
+import { isteacher, getUsername } from '/auth.mjs';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBquTMWfq17R6dQNI0ptFIMXWGUIpUNnCs",
+  authDomain: "codeclass-51eae.firebaseapp.com",
+  databaseURL: "https://codeclass-51eae-default-rtdb.firebaseio.com",
+  projectId: "codeclass-51eae",
+  storageBucket: "codeclass-51eae.appspot.com",
+  messagingSenderId: "520242527362",
+  appId: "1:520242527362:web:fbbd5cc38409159218c89b"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 // <i class="fas fa-paperclip fa-lg me-2 opacity-70"></i>
 // <i class="far fa-file-alt fa-lg me-2 opacity-70"></i>
@@ -7,6 +23,9 @@ import API, { uuid4 } from '/api.mjs';
 
 let moduleChildren = {};
 let popovers = [];
+let submission_info = {};
+let current_submission_type = {};
+let submissions = {};
 
 class comment_cooldown {
   static cooldown_time = 1000 * 90; // 1 minute 30 seconds
@@ -132,7 +151,8 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
 
         if (post.type === 'assignment') {
           // check if submitted
-          const submitted_info = await API.get(`/submitted/assignments/${post.id}/${getCookie('token')}`) || { is_submitted: false };
+          const submitted_info = await API.get(`/submitted/assignments/${post.id}/${getUsername()}`) || { is_submitted: false };
+          submission_info[post.id] = submitted_info;
           
           // check if late
           // const dueDate = new Date(new Date(post.due).setHours(23, 59, 59, 999));
@@ -154,7 +174,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
 
           // get the average rating for the post
           const avg_rating = await API.get(`/ratings/${post.id}`).then((response) => {
-            const get_average = arr => arr.reduce((a, b) => a + b) / arr.length;
+            const get_average = arr => (arr.reduce((a, b) => a + b) / arr.length).toFixed(1);
 
             if (!response) {
               return 0;
@@ -199,47 +219,57 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                     <div class="star-ratings">
                       <div>
                         ${
-                          getCookie('cc-isteacher')
+                          isteacher()
                           ? `<span class="disable-highlighting badge badge-${(avg_rating >= 4.5) ? 'success' : (avg_rating >= 3.0) ? 'primary' : 'danger'}">${avg_rating}</span>`
                           : `<i class="far fa-question-circle" id="popover-${post.id}" data-mdb-toggle="popover" title="Ratings" data-mdb-content="Give this post a rating. Would you want to see a post like this again?"></i>`
                         }
-                        <ul class="rating" data-mdb-toggle="rating" ${getCookie('cc-isteacher') ? `data-mdb-value="${avg_rating}" style="cursor: default!important;"` : ''} id="rating-${post.id}">
-                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                        <ul class="rating" data-mdb-toggle="rating" ${isteacher() ? `data-mdb-value="${avg_rating}" style="cursor: default!important;"` : ''} id="rating-${post.id}">
+                          <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
                             <i class="far fa-star fa-sm text-primary" title="Bad"></i>
                           </li>
-                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                          <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
                             <i class="far fa-star fa-sm text-primary" title="Poor"></i>
                           </li>
-                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                          <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
                             <i class="far fa-star fa-sm text-primary" title="OK"></i>
                           </li>
-                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                          <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
                             <i class="far fa-star fa-sm text-primary" title="Good"></i>
                           </li>
-                          <li ${getCookie('cc-isteacher') ? `style="cursor: default!important;"` : ''}>
+                          <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
                             <i class="far fa-star fa-sm text-primary" title="Excellent"></i>
                           </li>
                         </ul>
                       </div>
                     </div>
                   </div>
-                  <div class="col-6">
+                  <div class="col-2 r-btn-cmnt">
                     <div class="row"> <!-- row for the button and comment section -->
-                        ${
-                          (submitted_info.is_submitted)
-                          ? `<div class="col-8">
-                              <button class="btn btn-primary is-submitted-btn" type="button">
-                                <i class="fas fa-eye fa-lg me-2"></i>
-                                View Submission
-                              </button>
-                            </div>`
-                          : `<div class="col-8">
-                              <button class="btn btn-primary is-submitted-btn" type="button">
-                                <i class="fas fa-upload fa-lg me-2"></i>
-                                Submit Assignment
-                              </button>
-                            </div>`
+                      <div class="col-8">
+                        
+                          ${
+                            (submitted_info.is_submitted || isteacher())
+                            ? `<button class="btn btn-primary is-submitted-btn" type="button" id="is-submitted-btn-${post.id}">
+                                <i class="fas fa-${(isteacher()) ? 'book' : 'eye'} fa-lg me-2"></i>${(isteacher()) ? 'Grade' : 'View'} Submission` + ((isteacher()) ? 's' : '') +
+                              '</button>'
+                            : `<div class="btn-group">
+                                <button type="button" class="btn btn-primary" id="is-submitted-btn-${post.id}">
+                                  <i class="fas fa-upload fa-lg me-2"></i>Submit Assignment
+                                </button>
+                                <button
+                                  class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                                  type="button"
+                                  data-mdb-toggle="dropdown"
+                                  aria-expanded="false"
+                                ></button>
+                                <ul class="dropdown-menu" id="dropdown-menu-${post.id}">
+                                  <li><a class="dropdown-item" href="#1">Text Submission</a></li>
+                                  <li><a class="dropdown-item" href="#2">File Upload</a></li>
+                                  <li><a class="dropdown-item" href="#3">Link Submission</a></li>
+                                </ul>
+                              </div>`
                           }
+                      </div>
                     </div>
                     <div> <!-- row for the comment section -->
                       <div class="row">
@@ -250,7 +280,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                       </div>
                     </div>
                     <div class="row"> <!-- row for the comments -->
-                      <div class="col-6">
+                      <div class="col-6 comments-parent">
                         <div class="comments" id="comments-${post.id}">
                           ${
                             comments.map((comment) => {
@@ -274,10 +304,10 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                       </div>
                     </div>
                   </div>
-                  <!-- area to submit assignment or view assignment -->
-                  <div class="col-6">
-
-                  </div>
+                </div>
+                <!-- area to submit assignment or view assignment -->
+                <div class="col-5 submission-area" id="submission-area-${post.id}">
+                  <div class="wysiwyg visually-hidden" data-mdb-wysiwyg="wysiwyg" id="wysiwyg-${post.id}"></div>
                 </div>
               </div>
             </div>`;
@@ -293,19 +323,329 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
       window.last_comment_update = Date.now();
       assignmentsQuizzesAndResources.forEach((post) => {
         try {
-          if (getCookie('cc-isteacher')) {
+          const btn = document.getElementById(`is-submitted-btn-${post.id}`);
+          new mdb.Dropdown(btn);
+        
+          document.querySelectorAll(`#dropdown-menu-${post.id} > li > a.dropdown-item`).forEach((e) => {
+            e.addEventListener('click', () => {
+              const href = e.href.substring(e.href.length - 1);
+              current_submission_type[post.id] = href;
+              if (href == 1) {
+                // text submission
+                document.getElementById(`submission-area-${post.id}`).innerHTML = `<div class="wysiwyg" data-mdb-wysiwyg="wysiwyg" id="wysiwyg-${post.id}"></div>`;
+                new WYSIWYG(document.getElementById(`wysiwyg-${post.id}`));
+                
+                document.getElementById(`wysiwyg-${post.id}`).addEventListener('click', () => {
+                  try {
+                    hljs.highlightElement(document.querySelector(`#wysiwyg-${post.id} pre code`));
+                  } catch (e) {};
+                });
+
+                btn.addEventListener('click', () => {
+                  const text = document.querySelector(`#submission-area-${post.id} > textarea`).value;
+                  
+                  if (text.length === 0 || text > 5242880) {
+                    alert('ERROR: Submission cannot be empty');
+                    return;
+                  }
+
+                  if (current_submission_type[post.id] == 1) {
+                    API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
+                      submission: text,
+                      submission_type: 'text'
+                    }, false).then((res) => {
+                      if (res.status === 200) {
+                        // success
+                        API.put(`/submitted/assignments/${post.id}/${getUsername()}`, {
+                          is_submitted: true,
+                          submitted_at: Date.now(),
+                        }, false).then((res) => {
+                          if (res.status === 200) {
+                            // success
+                            alert("Successfully submitted your assignment!");
+                            window.location.reload();
+                          } else {
+                            // error
+                            new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                          }
+                        });
+                      } else {
+                        // error
+                        new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                      }
+                    });
+                  }
+                });
+              } else if (href == 2) {
+                document.getElementById(`submission-area-${post.id}`).innerHTML = `
+                  <div class="file-upload row">
+                  <div class="progress">
+                    <div class="progress-bar" id="progress-bar-${post.id}" role="progressbar" style="width: 0%;" aria-valuenow="-" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                    <div class="file-upload-wrapper col-12">
+                      <input
+                        id="file-upload-${post.id}"
+                        type="file"
+                        class="file-upload-input"
+                        data-mdb-multiple="true"
+                        data-mdb-max-file-size="5M"
+                        data-mdb-accepted-extensions=".webm, .pdf, .py, .txt, .html, .css, .js, .jpg, .jpeg, .json, .csv, .pickle, .pkl, .sql"
+                        data-mdb-max-file-quantity="5"
+                        data-mdb-file-upload="file-upload"
+                      />
+                    </div>
+                  </div>`;
+
+                const fileUploadElement = document.getElementById(`file-upload-${post.id}`);
+                new FileUpload(fileUploadElement);
+
+                btn.addEventListener('click', async () => {
+                  const files = fileUploadElement.files;
+                  console.log(files);
+                  if (files.length === 0) {
+                    alert('ERROR: No files selected');
+                    return;
+                  }
+                  
+                  const progressBar = document.getElementById(`progress-bar-${post.id}`);
+                  const storage = getStorage();
+                  let urls = '';
+
+                  function upload(filename, file, filecount, filenum) {
+                    return new Promise((_done) => {
+                      const portionOfProgressBar = 100 / filecount;
+                      const fileRef = ref(storage, `assignment-submissions/${post.id}/${getUsername()}/${filename}`);
+                      const uploadTask = uploadBytesResumable(fileRef, file);
+                      uploadTask.on("state_changed", (snapshot) => {
+                        const progress = ((snapshot.bytesTransferred / snapshot.totalBytes) * (portionOfProgressBar * filenum)).toFixed(2);
+                        progressBar.setAttribute('aria-valuenow', `${progress}`);
+                        progressBar.style.width = `${progress}%`;
+                      }, (err) => {
+                        // error
+                        new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                      }, () => {
+                        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                          urls += url + '<;$;>';
+                          _done();
+                        });
+                      });
+                    });
+                  }
+
+                  for (let i = 0; i < files.length; i++) {
+                    await upload(files[i].name, files[i], files.length, i +1);
+                  }
+
+                  API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
+                    submission: urls.substring(0, urls.length - 5), // remove trailing sep
+                    submission_type: 'files',
+                    filenames: Array.from(files).map((file) => file.name).join('<;$;>')
+                  }, false).then((res) => {
+                    if (res.status === 200) {
+                      // success
+                      API.put(`/submitted/assignments/${post.id}/${getUsername()}`, {
+                        is_submitted: true,
+                        submitted_at: Date.now(),
+                      }, false).then((res) => {
+                        if (res.status === 200) {
+                          // success
+                          alert("Successfully submitted your assignment!");
+                          window.location.reload();
+                        } else {
+                          // error
+                          new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                        }
+                      });
+                    } else {
+                      // error
+                      new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                    }
+                  });
+                });
+              } else if (href == 3) {
+                document.getElementById(`submission-area-${post.id}`).innerHTML = `
+                  <div class="url-submission-container">
+                    <div class="form-outline">
+                      <input type="text" id="url-submission-${post.id}" class="form-control" />
+                      <label class="form-label" for="url-submission-${post.id}">URL Submission</label>
+                    </div>
+                </div>`;
+
+                const urlSubmission = document.getElementById(`url-submission-${post.id}`);
+                new mdb.Input(urlSubmission.parentElement);
+
+                function submitUrl(e, nocheck = false) {
+                  if (current_submission_type[post.id] == 3 && (e?.key === 'Enter' || nocheck)) {
+                    //
+                    // submit url
+                    //
+                    const url = urlSubmission.value;
+                    API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
+                      submission: url,
+                      submission_type: 'url'
+                    }, false).then((res) => {
+                      if (res.status === 200) {
+                        // success
+                        API.put(`/submitted/assignments/${post.id}/${getUsername()}`, {
+                          is_submitted: true,
+                          submitted_at: Date.now(),
+                        }, false).then((res) => {
+                          if (res.status === 200) {
+                            // success
+                            alert("Successfully submitted your assignment!");
+                            window.location.reload();
+                          } else {
+                            // error
+                            new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                          }
+                        });
+                      } else {
+                        // error
+                        new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                      }
+                    });
+                  }
+                }
+
+                urlSubmission.addEventListener('keydown', (e) => { submitUrl(e) });
+                btn.addEventListener('click', () => { submitUrl(e, true) });
+              }
+            });
+          });
+
+          const is_submitted = btn.innerText.includes('View');
+          if (isteacher()) {
+            btn.addEventListener('click', () => {
+              // go to grading tab
+              window.location.href = `/grade/?assignment=${post.id}`;
+            });
+          } else if (is_submitted) {
+            function showSubmission(submission) {
+              const submissionArea = document.getElementById(`submission-area-${post.id}`);
+              
+              if (submission.submission_type === 'text') {
+                submissionArea.innerHTML = `
+                  <div class="text-submission-container">
+                    <div class="form-outline">
+                      <label class="form-label" for="text-submission-${post.id}">Text Submission</label>
+                      <textarea class="form-control" id="text-submission-${post.id}" rows="4" readonly>${submission.submission}</textarea>
+                    </div>
+                  </div>`;
+              } else if (submission.submission_type === 'files') {
+                const urls = submission.submission.split('<;$;>');
+                const filenames = submission.filenames.split('<;$;>');
+
+                submissionArea.innerHTML = `
+                  <div class="files-submission-container">
+                    <!-- display each file in the area, taking up the entire width of the column. the files are stacked vertically and can be scrolled -->
+                    <div class="files-submission">
+                      ${urls.map((url, i) => {
+                        const uuid = uuid4();
+                        return `
+                          <div class="file-submission">
+                            <a class="btn btn-primary" id="${uuid}" href="${url}" target="_blank">View</a>
+                            <label for="uuid">${filenames[i]}</label>
+                          </div>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>`;
+              } else if (submission.submission_type === 'url') {
+                submissionArea.innerHTML = `
+                  <div class="url-submission-viewing-container">
+                    <div class="form-outline">
+                      <label class="form-label" for="url-submission-${post.id}">URL Submission</label>
+                      <input type="text" id="url-submission-${post.id}" class="form-control" value="${submission.submission}" readonly />
+                    </div>
+                    <iframe src="${submission.submission}" class="url-submission-iframe"></iframe>
+                  </div>`;
+              }
+            }
+            
+            btn.addEventListener('click', () => {
+              // check if submission exists first
+              if (submissions[post.id]) {
+                // show submission
+                const submission = submissions[post.id];
+                showSubmission(submission);
+              } else {
+                // get submission
+                API.get(`/submissions/assignments/${post.id}/${getUsername()}`).then((submission) => {
+                  // show submission
+                  submissions[post.id] = submission;
+                  showSubmission(submission);
+                });
+              }
+            });
+          } else {
+            // show submission area editor
+            const editor = document.getElementById(`wysiwyg-${post.id}`);
+            editor.classList.remove('visually-hidden');
+            new WYSIWYG(editor);
+
+            document.getElementById(`wysiwyg-${post.id}`).addEventListener('click', () => {
+              try {
+                hljs.highlightElement(document.querySelector(`#wysiwyg-${post.id} pre code`));
+              } catch (e) {};
+            });
+
+            current_submission_type[post.id] = 1;
+            btn.addEventListener('click', () => {
+              if (current_submission_type[post.id] == 1) {
+                const text = document.querySelector(`#submission-area-${post.id} > textarea`).value;
+
+                if (text.length === 0 || text > 5242880) {
+                  alert('ERROR: Submission cannot be empty');
+                  return;
+                }
+
+                API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
+                  submission: text,
+                  submission_type: 'text'
+                }, false).then((res) => {
+                  if (res.status === 200) {
+                    // success
+                    API.put(`/submitted/assignments/${post.id}/${getUsername()}`, {
+                      is_submitted: true,
+                      submitted_at: Date.now(),
+                    }, false).then((res) => {
+                      if (res.status === 200) {
+                        // success
+                        alert("Successfully submitted your assignment!");
+                        window.location.reload();
+                      } else {
+                        // error
+                        new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                      }
+                    });
+                  } else {
+                    // error
+                    new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                  }
+                });
+              }
+            });
+          }
+        } catch (e) {
+
+        }
+
+        try {
+          if (isteacher()) {
             new mdb.Rating(document.getElementById(`rating-${post.id}`), { readonly: true });
           } else {
             // rating
-            API.get(`/ratings/${post.id}/${getCookie('token')}`).then((rating) => {
-              new mdb.Rating(document.getElementById(`rating-${post.id}`), { readonly: false, value: rating || 0 });
-              document.getElementById(`rating-${post.id}`).addEventListener('click', () => {
-                // get rating
-                const stars = mdb.Rating.getInstance(document.getElementById(`rating-${post.id}`))._index + 1;
-                
-                // update rating
-                API.put(`/ratings/${post.id}/${getCookie('token')}`, stars);
-              });
+            API.get(`/ratings/${post.id}/${getUsername()}`).then((rating) => {
+              try {
+                new mdb.Rating(document.getElementById(`rating-${post.id}`), { readonly: false, value: rating || 0 });
+                document.getElementById(`rating-${post.id}`).addEventListener('click', () => {
+                  // get rating
+                  const stars = mdb.Rating.getInstance(document.getElementById(`rating-${post.id}`))._index + 1;
+                  
+                  // update rating
+                  API.put(`/ratings/${post.id}/${getUsername()}`, stars);
+                });
+              } catch (e) {};
             });
 
             // popover
@@ -364,7 +704,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
               comment_cooldown.start(post.id);
 
               // post to database
-              API.submitComment(getCookie('cc-username'), post.id, commentBox.value.trim().replaceAll(/\n/g, "<br>").replaceAll(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")).then((comment) => {
+              API.submitComment(getUsername(), post.id, commentBox.value.trim().replaceAll(/\n/g, "<br>").replaceAll(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")).then((comment) => {
                 const ele = document.getElementById(`comments-${post.id}`);
                 const uuid = uuid4();
                 commentBox.value = '';
