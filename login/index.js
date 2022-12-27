@@ -6,7 +6,7 @@ document.getElementById('submit').addEventListener('click', async () => {
 
   await login(username, password).then((success) => {
     if (success) {
-      window.location.href = '/home/';
+      window.location.href = '/';
     } else {
       new bootstrap.Modal(document.getElementById('login-error')).show();
       document.getElementById('close').focus();
