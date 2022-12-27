@@ -815,7 +815,7 @@ new Promise((_res) => {
     const sidenavContainer = document.getElementById('nav-body');
 
     // sort by date posted
-    let modules = Array.from(Object.values(_modules)).sort((a, b) => new Date(a.posted) - new Date(b.posted))//TODO:.reverse(); make sure to add the .reverse back because the modules should be in order of most receltly posted
+    let modules = Array.from(Object.values(_modules)).sort((a, b) => new Date(a.posted) - new Date(b.posted)).reverse(); // TODO:make sure to add the .reverse back because the modules should be in order of most receltly posted
     checkForFinish(modules.length, _res);
 
     modules.forEach((module, i) => {
