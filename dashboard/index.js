@@ -1,7 +1,7 @@
 import { ref, getStorage, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import API, { uuid4 } from '/api.mjs';
-import { isteacher, getUsername } from '/auth.mjs';
+import API, { uuid4 } from '../api.mjs';
+import { isteacher, getUsername } from '../auth.mjs';
 
 // Firebase configuration
 const firebaseConfig = {

@@ -1,4 +1,4 @@
-import { login } from '/auth.mjs';
+import { login } from '../auth.mjs';
 
 document.getElementById('submit').addEventListener('click', async () => {
   const username = document.getElementById('username').value;
