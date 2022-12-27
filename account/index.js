@@ -10,7 +10,7 @@ API.get('/users/' + getUsername()).then((user) => {
   password = user.password;
   
   if (user.isteacher) {
-    document.getElementById('stats').innerHTML = `<a class="btn btn-success" href="/dashboard/">View Teacher Dashboard</a>`
+    document.getElementById('stats').innerHTML = `<a class="btn btn-success" href="../dashboard/">View Teacher Dashboard</a>`;
   } else {
     document.getElementById('rank').innerHTML = user.rank;
     document.getElementById('points').innerHTML = user.points;
