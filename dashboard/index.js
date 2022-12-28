@@ -181,7 +181,9 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
 
       const accordion = document.getElementById('accordion');
       assignmentsQuizzesAndResources.reduce(async (acc, post) => {
-        console.log(post);
+        const allow_text_submission = post.submissionType.split('&').includes('txt');
+        const allow_file_upload = post.submissionType.split('&').includes('f');
+        const allow_link_submission = post.submissionType.split('&').includes('lnk');
 
         if (post.type === 'assignment') {
           // check if submitted
@@ -296,10 +298,22 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                                   data-mdb-toggle="dropdown"
                                   aria-expanded="false"
                                 ></button>
-                                <ul class="dropdown-menu" id="dropdown-menu-${post.id}">
-                                  <li><a class="dropdown-item" href="#1">Text Submission</a></li>
-                                  <li><a class="dropdown-item" href="#2">File Upload</a></li>
-                                  <li><a class="dropdown-item" href="#3">Link Submission</a></li>
+                                <ul class="dropdown-menu" id="dropdown-menu-${post.id}" data-txt="${allow_text_submission}" data-f="${allow_file_upload}" data-lnk="${allow_link_submission}">
+                                  ${
+                                    (allow_text_submission)
+                                    ? `<li><a class="dropdown-item" href="#1">Text Submission</a></li>`
+                                    : ''
+                                  }
+                                  ${
+                                    (allow_file_upload)
+                                    ? `<li><a class="dropdown-item" href="#2">File Upload</a></li>`
+                                    : ''
+                                  }
+                                  ${
+                                    (allow_link_submission)
+                                    ? `<li><a class="dropdown-item" href="#3">Link Submission</a></li>`
+                                    : ''
+                                  }
                                 </ul>
                               </div>`
                           }
@@ -557,6 +571,25 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                 urlSubmission.addEventListener('keydown', (e) => { submitUrl(e) });
                 btn.addEventListener('click', () => { submitUrl(e, true) });
               }
+            });
+          });
+
+          new Promise((__r__) => {
+            setTimeout(__r__, 1);
+          }).then(() => {
+            document.querySelectorAll(`#dropdown-menu-${post.id} > li > a.dropdown-item`).forEach((e) => {
+              const ele = document.querySelector(`#dropdown-menu-${post.id}`);
+              const allow_link_submission = ele.getAttribute('data-lnk') === 'true';
+              const allow_file_submission = ele.getAttribute('data-f') == 'true';
+
+              if (allow_link_submission)
+                current_submission_type[post.id] = 3;
+              else if (allow_file_submission)
+                current_submission_type[post.id] = 2;
+              else
+                current_submission_type[post.id] = 1;
+
+              e.click();
             });
           });
 
