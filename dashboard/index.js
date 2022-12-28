@@ -308,14 +308,14 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                     <div> <!-- row for the comment section -->
                       <div class="row">
                         <div class="col-6">
-                          <textarea class="form-control mention" id="comment-box-${post.id}" placeholder="Add a comment" autocomplete="off"></textarea>
-                          <label for="comment-box" class="form-label">Shift + Enter to submit <span class="badge rounded-pill badge-primary ms-2" id="comments-count-${post.id}">${comments.length}</span></label>
+                          <textarea class="form-control mention" id="comment-box-${post.id}" placeholder="Add a comment" autocomplete="off" ${(post.allowComments) ? '' : 'readonly title="Comments are disabled on this post"'}></textarea>
+                          <label for="comment-box" class="form-label disable-highlighting">Shift + Enter to submit <span class="badge rounded-pill badge-primary ms-2 disable-highlighting" id="comments-count-${post.id}">${comments.length}</span></label>
                         </div>
                       </div>
                     </div>
                     <div class="row"> <!-- row for the comments -->
                       <div class="col-6 comments-parent">
-                        <div class="comments" id="comments-${post.id}">
+                        <div class="comments" id="comments-${post.id}" ${(post.allowComments) ? '' : 'readonly'}>
                           ${
                             comments.map((comment) => {
                               return `
