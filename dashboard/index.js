@@ -916,7 +916,7 @@ new Promise((_res) => {
           </li>
         */
 
-        const assignmentHTML = assignmentNames.reduce((acc, assignment) => {
+        const assignmentHTML = assignmentNames.reduce((acc, assignment, i) => {
           /*
             <li class="sidenav-item">
               <a class="sidenav-link">Link 1</a>
@@ -926,7 +926,7 @@ new Promise((_res) => {
           const sidenavAssignment = document.createElement('li');
           sidenavAssignment.classList.add('sidenav-item');
           sidenavAssignment.innerHTML = `
-            <a class="sidenav-link" href="TODO">
+            <a class="sidenav-link" href="${(isteacher()) ? `/grade/?module=${module.name}&assignment=${i}` : `#${assignment.module}_${i}`}">
               <i class="far fa-file-alt fa-fw fa-lg me-3"></i>
               <span class="text-truncate">${assignment}</span>
             </a>`;
@@ -944,7 +944,7 @@ new Promise((_res) => {
           const sidenavQuiz = document.createElement('li');
           sidenavQuiz.classList.add('sidenav-item');
           sidenavQuiz.innerHTML = `
-            <a class="sidenav-link">
+            <a class="sidenav-link" href="${(isteacher()) ? `` : `#${module.name}_${i}`}">
               <i class="fas fa-bong fa-fw fa-lg me-3"></i>
               <span class="text-truncate">${quiz}</span>
             </a>`;
@@ -952,7 +952,7 @@ new Promise((_res) => {
           return acc + sidenavQuiz.outerHTML;
         }, '');
 
-        const resourceHTML = resourceNames.reduce((acc, resource) => {
+        const resourceHTML = resourceNames.reduce((acc, resource, i) => {
           /*
             <li class="sidenav-item">
               <a class="sidenav-link">Resource Name</a>
@@ -962,7 +962,7 @@ new Promise((_res) => {
           const sidenavResource = document.createElement('li');
           sidenavResource.classList.add('sidenav-item');
           sidenavResource.innerHTML = `
-            <a class="sidenav-link">
+            <a class="sidenav-link" href="${(isteacher()) ? `` : `#${module.name}_${i}`}">
               <i class="fas fa-paperclip fa-fw fa-lg me-3"></i>
               <span class="text-truncate">${resource}</span>
             </a>`;
