@@ -9,7 +9,9 @@ export function uuid4() {
 const pfps = {
   'Chrissy': '/static/chris.png',
   'TJ': '/static/tj.png',
+  'Theordore Junior': '/static/tj.png',
   'wybitty': '/static/wyatt.png',
+  'Wyatt Gaston': '/static/wyatt.png',
   'RahukE': '/static/rahul.png',
   'Maruabb': '/static/maruabb.png',
   'Jainaldo': '/static/jainaldo.png'
@@ -131,6 +133,8 @@ export default class API {
   }
 
   static async submitComment(username, postId, commentBody) {
+    const pfp = pfps[username];
+    
     if (username === 'TJ') username = 'Theordore Junior';
     if (username === 'wybitty') username = 'Wyatt Gaston'; // TODO: ERROR HANDLING FOR THIS FUNC. just have a modal popup or something
     
@@ -138,7 +142,7 @@ export default class API {
       body: commentBody,
       author: username,
       posted: new Date(Date.now()).toLocaleDateString(),
-      pfp: pfps[username]
+      pfp
     }
 
     await this.post(`/comments/${postId}`, comment);
