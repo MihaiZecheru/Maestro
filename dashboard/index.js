@@ -597,7 +597,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
           if (isteacher()) {
             btn.addEventListener('click', () => {
               // go to grading tab
-              window.location.href = `/grade/?assignment=${post.id}`;
+              window.location.href = `/grade/?module=${post.module}&assignment=${post.id}`;
             });
           } else if (is_submitted) {
             function showSubmission(submission) {
