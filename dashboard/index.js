@@ -341,14 +341,14 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                 </div>
                 <!-- area to submit assignment or view assignment -->
                 <div class="col-5 submission-area" id="submission-area-${post.id}">
-                  <div class="wysiwyg visually-hidden" data-mdb-wysiwyg="wysiwyg" id="wysiwyg-${post.id}"></div>
+                  <div class="wysiwyg visually-hidden" da ta-mdb-wysiwyg="wysiwyg" id="wysiwyg-${post.id}"></div>
                 </div>
               </div>
             </div>`;
         } else if (post.type === 'quiz') {
-          return (await acc);
+          return (await acc) + ``;
         } else if (post.type === 'resource') {
-          return (await acc);
+          return (await acc) + ``;
         } 
     }, '').then((HTML) => {
       // populate accordion
@@ -437,7 +437,6 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                         class="file-upload-input"
                         data-mdb-multiple="true"
                         data-mdb-max-file-size="5M"
-                        data-mdb-accepted-extensions=".webm, .pdf, .py, .txt, .html, .css, .js, .jpg, .jpeg, .json, .csv, .pickle, .pkl, .sql"
                         data-mdb-max-file-quantity="5"
                         data-mdb-file-upload="file-upload"
                       />
