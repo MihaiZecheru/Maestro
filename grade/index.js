@@ -199,3 +199,17 @@ if (module_id) {
     });
   });
 }
+
+window.onhashchange = () => {
+  // open the assignment or quiz on the right 
+  const id = window.location.hash.substring(1);
+  const post = posts[id];
+
+  if (!post) return;
+
+  if (post.type === 'assignment') {
+
+  } else {
+    
+  }
+}
