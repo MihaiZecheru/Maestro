@@ -1,0 +1,25 @@
+.module-input-parent {
+  width: 100%;
+  height: 100%;
+}
+
+.module-input-parent > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.module-input-parent > div > div {
+  width: 50%;
+  margin-top: 20vh;
+}
+
+nav {
+  margin-top: var(--header-height);
+  height: calc(100vh - var(--header-height))!important;
+  width: 20rem!important;
+}
+
+.sidenav {
+  z-index: 998!important; /* one less than the dropdown */
+}
