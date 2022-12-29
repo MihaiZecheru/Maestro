@@ -76,3 +76,7 @@ header > * {
   background-color: #333;
   border-radius: 1em;
 }
+
+.dropdown-divider {
+  opacity: 0.25;
+}

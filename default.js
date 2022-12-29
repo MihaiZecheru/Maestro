@@ -30,6 +30,8 @@ if (isTeacher()) {
       <li><a class="dropdown-item" href="/create/module/">Module</a></li>
       <li><a class="dropdown-item" href="/create/quiz/">Quiz</a></li>
       <li><a class="dropdown-item" href="/create/resource/">Resource</a></li>
+      <li><hr class="dropdown-divider" /></li>
+      <li><a class="dropdown-item" href="/grade/">Admin Dashboard</a></li>
     </ul>
   </div>`;
 }
