@@ -497,6 +497,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                     }
 
                     if (current_submission_type[post.id] == 1) {
+                      btn.disabled = true;
                       API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
                         submission: text,
                         submission_type: 'text'
@@ -514,11 +515,13 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                             } else {
                               // error
                               new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                              btn.disabled = false;
                             }
                           });
                         } else {
                           // error
                           new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                          btn.disabled = false;
                         }
                       });
                     }
@@ -547,10 +550,12 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
 
                   btn.addEventListener('click', async () => {
                     const files = fileUploadElement.files;
-                    console.log(files);
+                    
                     if (files.length === 0) {
                       alert('ERROR: No files selected');
                       return;
+                    } else {
+                      btn.disabled = true;
                     }
                     
                     const progressBar = document.getElementById(`progress-bar-${post.id}`);
@@ -569,6 +574,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                         }, (err) => {
                           // error
                           new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                          btn.disabled = false;
                         }, () => {
                           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
                             urls += url + '<;$;>';
@@ -600,11 +606,13 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                           } else {
                             // error
                             new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                            btn.disabled = false;
                           }
                         });
                       } else {
                         // error
                         new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                        btn.disabled = false;
                       }
                     });
                   });
@@ -643,18 +651,23 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                             } else {
                               // error
                               new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                              btn.disabled = false;
                             }
                           });
                         } else {
                           // error
                           new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                          btn.disabled = false;
                         }
                       });
                     }
                   }
 
                   urlSubmission.addEventListener('keydown', (e) => { submitUrl(e) });
-                  btn.addEventListener('click', () => { submitUrl(e, true) });
+                  btn.addEventListener('click', () => { 
+                    btn.disabled = true;
+                    submitUrl(e, true)
+                  });
                 }
               });
             });
