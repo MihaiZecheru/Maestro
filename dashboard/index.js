@@ -181,9 +181,11 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
 
       const accordion = document.getElementById('accordion');
       assignmentsQuizzesAndResources.reduce(async (acc, post) => {
-        const allow_text_submission = post.submissionType.split('&').includes('txt');
-        const allow_file_upload = post.submissionType.split('&').includes('f');
-        const allow_link_submission = post.submissionType.split('&').includes('lnk');
+        if (post.type === 'assignment') {
+          var allow_text_submission = post.submissionType.split('&').includes('txt');
+          var allow_file_upload = post.submissionType.split('&').includes('f');
+          var allow_link_submission = post.submissionType.split('&').includes('lnk');
+        }
 
         if (post.type === 'assignment') {
           // check if submitted
@@ -362,7 +364,87 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
         } else if (post.type === 'quiz') {
           return (await acc) + ``;
         } else if (post.type === 'resource') {
-          return (await acc) + ``;
+          const postedDate = new Date(post.posted).toLocaleDateString();
+
+          // get the average rating for the post
+          const avg_rating = await API.get(`/ratings/${post.id}`).then((response) => {
+            const get_average = arr => (arr.reduce((a, b) => a + b) / arr.length).toFixed(1);
+
+            if (!response) {
+              return 0;
+            }
+
+            return get_average(Object.values(response));
+          });
+
+          return (await acc) + `
+          <div class="accordion-item" data-uuid="${post.id}">
+            <h2 class="accordion-header" id="heading${post.id}">
+              <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse"
+                data-mdb-target="#collapse${post.id}" aria-expanded="true" aria-controls="collapse${post.id}">
+                <i class="far fa-file-alt fa-lg me-2 opacity-70"></i>
+                <div class="child-information">
+                  <span class="child-name text-truncate">${post.name}</span>
+                  <div class="child-right-icons">
+                    <div> <!-- one badge max -->
+                      <span class="child-posted badge rounded-pill badge-primary}">Posted: ${postedDate.substring(0, postedDate.length - 5)}</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </h2>
+            <div id="collapse${post.id}" class="accordion-collapse collapse" aria-labelledby="heading${post.id}"
+              data-mdb-parent="#accordion">
+              <div class="accordion-body row" ${(post.url.length) ? 'style="min-height: 80vh!important"' : ''}>
+                ${(post.url.length) ? `
+                  <div class="col-12 resource-iframe-container">
+                    <iframe src="${post.url}" class="resource-iframe" title="resource"></iframe>
+                  </div>` : ''
+                }
+                <div class="post-content-and-rating">
+                  <div class="post-content">
+                    ${(post.description.length) ? 
+                      `<div class="post-description">
+                        <p>${post.description}</p>
+                      </div>` : ''
+                    }
+                    ${(post.url.length) ? `
+                      <div class="post-url">
+                        <a href="${post.url}" target="_blank" class="btn btn-primary view-resource-btn">View Resource</a>
+                      </div>` : ''
+                    }
+                  </div>
+                  ${(post.url.length) ? '<br><br>' : '<br>'}
+                  <div class="star-ratings">
+                    <div>
+                      ${
+                        isteacher()
+                        ? `<span class="disable-highlighting badge badge-${(avg_rating >= 4.5) ? 'success' : (avg_rating >= 3.0) ? 'primary' : 'danger'}">${avg_rating}</span>`
+                        : `<i class="far fa-question-circle" id="popover-${post.id}" data-mdb-toggle="popover" title="Ratings" data-mdb-content="Give this post a rating. Would you want to see a post like this again?"></i>`
+                      }
+                      <ul class="rating" data-mdb-toggle="rating" ${isteacher() ? `data-mdb-value="${avg_rating}" style="cursor: default!important;"` : ''} id="rating-${post.id}">
+                        <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
+                          <i class="far fa-star fa-sm text-primary" title="Bad"></i>
+                        </li>
+                        <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
+                          <i class="far fa-star fa-sm text-primary" title="Poor"></i>
+                        </li>
+                        <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
+                          <i class="far fa-star fa-sm text-primary" title="OK"></i>
+                        </li>
+                        <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
+                          <i class="far fa-star fa-sm text-primary" title="Good"></i>
+                        </li>
+                        <li ${isteacher() ? `style="cursor: default!important;"` : ''}>
+                          <i class="far fa-star fa-sm text-primary" title="Excellent"></i>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>`;
         } 
     }, '').then((HTML) => {
       // populate accordion
@@ -371,50 +453,139 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
       window.last_comment_update = Date.now();
       assignmentsQuizzesAndResources.forEach((post) => {
         try {
-          new Mention(document.getElementById(`comment-box-${post.id}`), {
-            showImg: true,
-            items: [
-              { name: 'Chrissy', username: 'Chrissy', image: '/static/chris.png' },
-              { name: 'Wyatt Gaston', username: 'Wyatt Gaston', image: '/static/wyatt.png' },
-              { name: 'RahukE', username: 'RahukE', image: '/static/rahul.png' },
-              { name: 'Theodore Junior', username: 'Theodore Junior', image: '/static/tj.png' },
-              { name: 'Jainaldo', username: 'Jainaldo', image: '/static/jainaldo.png' },
-              { name: 'Maruabb', username: 'Maruabb', image: '/static/maruabb.png' },
-            ],
-          });
+          if (post.type === 'assignment' || post.type === 'quiz') {
+            new Mention(document.getElementById(`comment-box-${post.id}`), {
+              showImg: true,
+              items: [
+                { name: 'Chrissy', username: 'Chrissy', image: '/static/chris.png' },
+                { name: 'Wyatt Gaston', username: 'Wyatt Gaston', image: '/static/wyatt.png' },
+                { name: 'RahukE', username: 'RahukE', image: '/static/rahul.png' },
+                { name: 'Theodore Junior', username: 'Theodore Junior', image: '/static/tj.png' },
+                { name: 'Jainaldo', username: 'Jainaldo', image: '/static/jainaldo.png' },
+                { name: 'Maruabb', username: 'Maruabb', image: '/static/maruabb.png' },
+              ],
+            });
+          }
         } catch (e) {};
         
         try {
-          const btn = document.getElementById(`is-submitted-btn-${post.id}`);
-          new mdb.Dropdown(btn);
-        
-          document.querySelectorAll(`#dropdown-menu-${post.id} > li > a.dropdown-item`).forEach((e) => {
-            e.addEventListener('click', () => {
-              const href = e.href.substring(e.href.length - 1);
-              current_submission_type[post.id] = href;
-              if (href == 1) {
-                // text submission
-                document.getElementById(`submission-area-${post.id}`).innerHTML = `<div class="wysiwyg" data-mdb-wysiwyg="wysiwyg" id="wysiwyg-${post.id}"></div>`;
-                new WYSIWYG(document.getElementById(`wysiwyg-${post.id}`));
-                
-                document.getElementById(`wysiwyg-${post.id}`).addEventListener('click', () => {
-                  try {
-                    hljs.highlightElement(document.querySelector(`#wysiwyg-${post.id} pre code`));
-                  } catch (e) {};
-                });
-
-                btn.addEventListener('click', () => {
-                  const text = document.querySelector(`#submission-area-${post.id} > textarea`).value;
+          if (post.type === 'assignment') {
+            const btn = document.getElementById(`is-submitted-btn-${post.id}`);
+            new mdb.Dropdown(btn);
+          
+            document.querySelectorAll(`#dropdown-menu-${post.id} > li > a.dropdown-item`).forEach((e) => {
+              e.addEventListener('click', () => {
+                const href = e.href.substring(e.href.length - 1);
+                current_submission_type[post.id] = href;
+                if (href == 1) {
+                  // text submission
+                  document.getElementById(`submission-area-${post.id}`).innerHTML = `<div class="wysiwyg" data-mdb-wysiwyg="wysiwyg" id="wysiwyg-${post.id}"></div>`;
+                  new WYSIWYG(document.getElementById(`wysiwyg-${post.id}`));
                   
-                  if (text.length === 0 || text > 5242880) {
-                    alert('ERROR: Submission cannot be empty');
-                    return;
-                  }
+                  document.getElementById(`wysiwyg-${post.id}`).addEventListener('click', () => {
+                    try {
+                      hljs.highlightElement(document.querySelector(`#wysiwyg-${post.id} pre code`));
+                    } catch (e) {};
+                  });
 
-                  if (current_submission_type[post.id] == 1) {
+                  btn.addEventListener('click', () => {
+                    const text = document.querySelector(`#submission-area-${post.id} > textarea`).value;
+                    
+                    if (text.length === 0 || text > 5242880) {
+                      alert('ERROR: Submission cannot be empty');
+                      return;
+                    }
+
+                    if (current_submission_type[post.id] == 1) {
+                      API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
+                        submission: text,
+                        submission_type: 'text'
+                      }, false).then((res) => {
+                        if (res.status === 200) {
+                          // success
+                          API.put(`/submitted/assignments/${post.id}/${getUsername()}`, {
+                            is_submitted: true,
+                            submitted_at: Date.now(),
+                          }, false).then((res) => {
+                            if (res.status === 200) {
+                              // success
+                              alert("Successfully submitted your assignment!");
+                              window.location.reload();
+                            } else {
+                              // error
+                              new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                            }
+                          });
+                        } else {
+                          // error
+                          new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                        }
+                      });
+                    }
+                  });
+                } else if (href == 2) {
+                  document.getElementById(`submission-area-${post.id}`).innerHTML = `
+                    <div class="file-upload row">
+                    <div class="progress">
+                      <div class="progress-bar" id="progress-bar-${post.id}" role="progressbar" style="width: 0%;" aria-valuenow="-" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                      <div class="file-upload-wrapper col-12">
+                        <input
+                          id="file-upload-${post.id}"
+                          type="file"
+                          class="file-upload-input"
+                          data-mdb-multiple="true"
+                          data-mdb-max-file-size="5M"
+                          data-mdb-max-file-quantity="5"
+                          data-mdb-file-upload="file-upload"
+                        />
+                      </div>
+                    </div>`;
+
+                  const fileUploadElement = document.getElementById(`file-upload-${post.id}`);
+                  new FileUpload(fileUploadElement);
+
+                  btn.addEventListener('click', async () => {
+                    const files = fileUploadElement.files;
+                    console.log(files);
+                    if (files.length === 0) {
+                      alert('ERROR: No files selected');
+                      return;
+                    }
+                    
+                    const progressBar = document.getElementById(`progress-bar-${post.id}`);
+                    const storage = getStorage();
+                    let urls = '';
+
+                    function upload(filename, file, filecount, filenum) {
+                      return new Promise((_done) => {
+                        const portionOfProgressBar = 100 / filecount;
+                        const fileRef = ref(storage, `assignment-submissions/${post.id}/${getUsername()}/${filename}`);
+                        const uploadTask = uploadBytesResumable(fileRef, file);
+                        uploadTask.on("state_changed", (snapshot) => {
+                          const progress = ((snapshot.bytesTransferred / snapshot.totalBytes) * (portionOfProgressBar * filenum)).toFixed(2);
+                          progressBar.setAttribute('aria-valuenow', `${progress}`);
+                          progressBar.style.width = `${progress}%`;
+                        }, (err) => {
+                          // error
+                          new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                        }, () => {
+                          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                            urls += url + '<;$;>';
+                            _done();
+                          });
+                        });
+                      });
+                    }
+
+                    for (let i = 0; i < files.length; i++) {
+                      await upload(files[i].name, files[i], files.length, i +1);
+                    }
+
                     API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
-                      submission: text,
-                      submission_type: 'text'
+                      submission: urls.substring(0, urls.length - 5), // remove trailing sep
+                      submission_type: 'files',
+                      filenames: Array.from(files).map((file) => file.name).join('<;$;>')
                     }, false).then((res) => {
                       if (res.status === 200) {
                         // success
@@ -436,71 +607,166 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                         new mdb.Modal(document.getElementById("submission-error-modal")).show();
                       }
                     });
-                  }
-                });
-              } else if (href == 2) {
-                document.getElementById(`submission-area-${post.id}`).innerHTML = `
-                  <div class="file-upload row">
-                  <div class="progress">
-                    <div class="progress-bar" id="progress-bar-${post.id}" role="progressbar" style="width: 0%;" aria-valuenow="-" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                    <div class="file-upload-wrapper col-12">
-                      <input
-                        id="file-upload-${post.id}"
-                        type="file"
-                        class="file-upload-input"
-                        data-mdb-multiple="true"
-                        data-mdb-max-file-size="5M"
-                        data-mdb-max-file-quantity="5"
-                        data-mdb-file-upload="file-upload"
-                      />
-                    </div>
+                  });
+                } else if (href == 3) {
+                  document.getElementById(`submission-area-${post.id}`).innerHTML = `
+                    <div class="url-submission-container">
+                      <div class="form-outline">
+                        <input type="text" id="url-submission-${post.id}" class="form-control" />
+                        <label class="form-label" for="url-submission-${post.id}">URL Submission</label>
+                      </div>
                   </div>`;
 
-                const fileUploadElement = document.getElementById(`file-upload-${post.id}`);
-                new FileUpload(fileUploadElement);
+                  const urlSubmission = document.getElementById(`url-submission-${post.id}`);
+                  new mdb.Input(urlSubmission.parentElement);
 
-                btn.addEventListener('click', async () => {
-                  const files = fileUploadElement.files;
-                  console.log(files);
-                  if (files.length === 0) {
-                    alert('ERROR: No files selected');
-                    return;
-                  }
-                  
-                  const progressBar = document.getElementById(`progress-bar-${post.id}`);
-                  const storage = getStorage();
-                  let urls = '';
-
-                  function upload(filename, file, filecount, filenum) {
-                    return new Promise((_done) => {
-                      const portionOfProgressBar = 100 / filecount;
-                      const fileRef = ref(storage, `assignment-submissions/${post.id}/${getUsername()}/${filename}`);
-                      const uploadTask = uploadBytesResumable(fileRef, file);
-                      uploadTask.on("state_changed", (snapshot) => {
-                        const progress = ((snapshot.bytesTransferred / snapshot.totalBytes) * (portionOfProgressBar * filenum)).toFixed(2);
-                        progressBar.setAttribute('aria-valuenow', `${progress}`);
-                        progressBar.style.width = `${progress}%`;
-                      }, (err) => {
-                        // error
-                        new mdb.Modal(document.getElementById("submission-error-modal")).show();
-                      }, () => {
-                        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                          urls += url + '<;$;>';
-                          _done();
-                        });
+                  function submitUrl(e, nocheck = false) {
+                    if (current_submission_type[post.id] == 3 && (e?.key === 'Enter' || nocheck)) {
+                      //
+                      // submit url
+                      //
+                      const url = urlSubmission.value;
+                      API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
+                        submission: url,
+                        submission_type: 'url'
+                      }, false).then((res) => {
+                        if (res.status === 200) {
+                          // success
+                          API.put(`/submitted/assignments/${post.id}/${getUsername()}`, {
+                            is_submitted: true,
+                            submitted_at: Date.now(),
+                          }, false).then((res) => {
+                            if (res.status === 200) {
+                              // success
+                              alert("Successfully submitted your assignment!");
+                              window.location.reload();
+                            } else {
+                              // error
+                              new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                            }
+                          });
+                        } else {
+                          // error
+                          new mdb.Modal(document.getElementById("submission-error-modal")).show();
+                        }
                       });
-                    });
+                    }
                   }
 
-                  for (let i = 0; i < files.length; i++) {
-                    await upload(files[i].name, files[i], files.length, i +1);
+                  urlSubmission.addEventListener('keydown', (e) => { submitUrl(e) });
+                  btn.addEventListener('click', () => { submitUrl(e, true) });
+                }
+              });
+            });
+
+            new Promise((__r__) => {
+              setTimeout(__r__, 1);
+            }).then(() => {
+              document.querySelectorAll(`#dropdown-menu-${post.id} > li > a.dropdown-item`).forEach((e) => {
+                const ele = document.querySelector(`#dropdown-menu-${post.id}`);
+                const allow_link_submission = ele.getAttribute('data-lnk') === 'true';
+                const allow_file_submission = ele.getAttribute('data-f') == 'true';
+
+                if (allow_link_submission)
+                  current_submission_type[post.id] = 3;
+                else if (allow_file_submission)
+                  current_submission_type[post.id] = 2;
+                else
+                  current_submission_type[post.id] = 1;
+
+                e.click();
+              });
+            });
+
+            const is_submitted = btn.innerText.includes('View');
+            if (isteacher()) {
+              btn.addEventListener('click', () => {
+                // go to grading tab
+                window.location.href = `/grade/?module=${post.module}&assignment=${post.id}`;
+              });
+            } else if (is_submitted) {
+              function showSubmission(submission) {
+                const submissionArea = document.getElementById(`submission-area-${post.id}`);
+                
+                if (submission.submission_type === 'text') {
+                  submissionArea.innerHTML = `
+                    <div class="text-submission-container">
+                      <div class="form-outline">
+                        <label class="form-label" for="text-submission-${post.id}">Text Submission</label>
+                        <textarea class="form-control" id="text-submission-${post.id}" rows="4" readonly>${submission.submission}</textarea>
+                      </div>
+                    </div>`;
+                } else if (submission.submission_type === 'files') {
+                  const urls = submission.submission.split('<;$;>');
+                  const filenames = submission.filenames.split('<;$;>');
+
+                  submissionArea.innerHTML = `
+                    <div class="files-submission-container">
+                      <!-- display each file in the area, taking up the entire width of the column. the files are stacked vertically and can be scrolled -->
+                      <div class="files-submission">
+                        ${urls.map((url, i) => {
+                          const uuid = uuid4();
+                          return `
+                            <div class="file-submission">
+                              <a class="btn btn-primary" id="${uuid}" href="${url}" target="_blank">View</a>
+                              <label for="uuid">${filenames[i]}</label>
+                            </div>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>`;
+                } else if (submission.submission_type === 'url') {
+                  submissionArea.innerHTML = `
+                    <div class="url-submission-viewing-container">
+                      <div class="form-outline">
+                        <label class="form-label" for="url-submission-${post.id}">URL Submission</label>
+                        <input type="text" id="url-submission-${post.id}" class="form-control" value="${submission.submission}" readonly />
+                      </div>
+                      <iframe src="${submission.submission}" class="url-submission-iframe"></iframe>
+                    </div>`;
+                }
+              }
+              
+              btn.addEventListener('click', () => {
+                // check if submission exists first
+                if (submissions[post.id]) {
+                  // show submission
+                  const submission = submissions[post.id];
+                  showSubmission(submission);
+                } else {
+                  // get submission
+                  API.get(`/submissions/assignments/${post.id}/${getUsername()}`).then((submission) => {
+                    // show submission
+                    submissions[post.id] = submission;
+                    showSubmission(submission);
+                  });
+                }
+              });
+            } else {
+              // show submission area editor
+              const editor = document.getElementById(`wysiwyg-${post.id}`);
+              editor.classList.remove('visually-hidden');
+              new WYSIWYG(editor);
+
+              document.getElementById(`wysiwyg-${post.id}`).addEventListener('click', () => {
+                try {
+                  hljs.highlightElement(document.querySelector(`#wysiwyg-${post.id} pre code`));
+                } catch (e) {};
+              });
+
+              current_submission_type[post.id] = 1;
+              btn.addEventListener('click', () => {
+                if (current_submission_type[post.id] == 1) {
+                  const text = document.querySelector(`#submission-area-${post.id} > textarea`).value;
+
+                  if (text.length === 0 || text > 5242880) {
+                    alert('ERROR: Submission cannot be empty');
+                    return;
                   }
 
                   API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
-                    submission: urls.substring(0, urls.length - 5), // remove trailing sep
-                    submission_type: 'files',
-                    filenames: Array.from(files).map((file) => file.name).join('<;$;>')
+                    submission: text,
+                    submission_type: 'text'
                   }, false).then((res) => {
                     if (res.status === 200) {
                       // success
@@ -522,193 +788,11 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
                       new mdb.Modal(document.getElementById("submission-error-modal")).show();
                     }
                   });
-                });
-              } else if (href == 3) {
-                document.getElementById(`submission-area-${post.id}`).innerHTML = `
-                  <div class="url-submission-container">
-                    <div class="form-outline">
-                      <input type="text" id="url-submission-${post.id}" class="form-control" />
-                      <label class="form-label" for="url-submission-${post.id}">URL Submission</label>
-                    </div>
-                </div>`;
-
-                const urlSubmission = document.getElementById(`url-submission-${post.id}`);
-                new mdb.Input(urlSubmission.parentElement);
-
-                function submitUrl(e, nocheck = false) {
-                  if (current_submission_type[post.id] == 3 && (e?.key === 'Enter' || nocheck)) {
-                    //
-                    // submit url
-                    //
-                    const url = urlSubmission.value;
-                    API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
-                      submission: url,
-                      submission_type: 'url'
-                    }, false).then((res) => {
-                      if (res.status === 200) {
-                        // success
-                        API.put(`/submitted/assignments/${post.id}/${getUsername()}`, {
-                          is_submitted: true,
-                          submitted_at: Date.now(),
-                        }, false).then((res) => {
-                          if (res.status === 200) {
-                            // success
-                            alert("Successfully submitted your assignment!");
-                            window.location.reload();
-                          } else {
-                            // error
-                            new mdb.Modal(document.getElementById("submission-error-modal")).show();
-                          }
-                        });
-                      } else {
-                        // error
-                        new mdb.Modal(document.getElementById("submission-error-modal")).show();
-                      }
-                    });
-                  }
                 }
-
-                urlSubmission.addEventListener('keydown', (e) => { submitUrl(e) });
-                btn.addEventListener('click', () => { submitUrl(e, true) });
-              }
-            });
-          });
-
-          new Promise((__r__) => {
-            setTimeout(__r__, 1);
-          }).then(() => {
-            document.querySelectorAll(`#dropdown-menu-${post.id} > li > a.dropdown-item`).forEach((e) => {
-              const ele = document.querySelector(`#dropdown-menu-${post.id}`);
-              const allow_link_submission = ele.getAttribute('data-lnk') === 'true';
-              const allow_file_submission = ele.getAttribute('data-f') == 'true';
-
-              if (allow_link_submission)
-                current_submission_type[post.id] = 3;
-              else if (allow_file_submission)
-                current_submission_type[post.id] = 2;
-              else
-                current_submission_type[post.id] = 1;
-
-              e.click();
-            });
-          });
-
-          const is_submitted = btn.innerText.includes('View');
-          if (isteacher()) {
-            btn.addEventListener('click', () => {
-              // go to grading tab
-              window.location.href = `/grade/?module=${post.module}&assignment=${post.id}`;
-            });
-          } else if (is_submitted) {
-            function showSubmission(submission) {
-              const submissionArea = document.getElementById(`submission-area-${post.id}`);
-              
-              if (submission.submission_type === 'text') {
-                submissionArea.innerHTML = `
-                  <div class="text-submission-container">
-                    <div class="form-outline">
-                      <label class="form-label" for="text-submission-${post.id}">Text Submission</label>
-                      <textarea class="form-control" id="text-submission-${post.id}" rows="4" readonly>${submission.submission}</textarea>
-                    </div>
-                  </div>`;
-              } else if (submission.submission_type === 'files') {
-                const urls = submission.submission.split('<;$;>');
-                const filenames = submission.filenames.split('<;$;>');
-
-                submissionArea.innerHTML = `
-                  <div class="files-submission-container">
-                    <!-- display each file in the area, taking up the entire width of the column. the files are stacked vertically and can be scrolled -->
-                    <div class="files-submission">
-                      ${urls.map((url, i) => {
-                        const uuid = uuid4();
-                        return `
-                          <div class="file-submission">
-                            <a class="btn btn-primary" id="${uuid}" href="${url}" target="_blank">View</a>
-                            <label for="uuid">${filenames[i]}</label>
-                          </div>
-                        `;
-                      }).join('')}
-                    </div>
-                  </div>`;
-              } else if (submission.submission_type === 'url') {
-                submissionArea.innerHTML = `
-                  <div class="url-submission-viewing-container">
-                    <div class="form-outline">
-                      <label class="form-label" for="url-submission-${post.id}">URL Submission</label>
-                      <input type="text" id="url-submission-${post.id}" class="form-control" value="${submission.submission}" readonly />
-                    </div>
-                    <iframe src="${submission.submission}" class="url-submission-iframe"></iframe>
-                  </div>`;
-              }
+              });
             }
-            
-            btn.addEventListener('click', () => {
-              // check if submission exists first
-              if (submissions[post.id]) {
-                // show submission
-                const submission = submissions[post.id];
-                showSubmission(submission);
-              } else {
-                // get submission
-                API.get(`/submissions/assignments/${post.id}/${getUsername()}`).then((submission) => {
-                  // show submission
-                  submissions[post.id] = submission;
-                  showSubmission(submission);
-                });
-              }
-            });
-          } else {
-            // show submission area editor
-            const editor = document.getElementById(`wysiwyg-${post.id}`);
-            editor.classList.remove('visually-hidden');
-            new WYSIWYG(editor);
-
-            document.getElementById(`wysiwyg-${post.id}`).addEventListener('click', () => {
-              try {
-                hljs.highlightElement(document.querySelector(`#wysiwyg-${post.id} pre code`));
-              } catch (e) {};
-            });
-
-            current_submission_type[post.id] = 1;
-            btn.addEventListener('click', () => {
-              if (current_submission_type[post.id] == 1) {
-                const text = document.querySelector(`#submission-area-${post.id} > textarea`).value;
-
-                if (text.length === 0 || text > 5242880) {
-                  alert('ERROR: Submission cannot be empty');
-                  return;
-                }
-
-                API.put(`/submissions/assignments/${post.id}/${getUsername()}`, {
-                  submission: text,
-                  submission_type: 'text'
-                }, false).then((res) => {
-                  if (res.status === 200) {
-                    // success
-                    API.put(`/submitted/assignments/${post.id}/${getUsername()}`, {
-                      is_submitted: true,
-                      submitted_at: Date.now(),
-                    }, false).then((res) => {
-                      if (res.status === 200) {
-                        // success
-                        alert("Successfully submitted your assignment!");
-                        window.location.reload();
-                      } else {
-                        // error
-                        new mdb.Modal(document.getElementById("submission-error-modal")).show();
-                      }
-                    });
-                  } else {
-                    // error
-                    new mdb.Modal(document.getElementById("submission-error-modal")).show();
-                  }
-                });
-              }
-            });
           }
-        } catch (e) {
-
-        }
+        } catch (e) {};
 
         try {
           if (isteacher()) {
