@@ -23,3 +23,96 @@ nav {
 .sidenav {
   z-index: 998!important; /* one less than the dropdown */
 }
+
+#grading-area {
+  margin-left: 22.5rem!important;
+  margin-right: 2.5rem!important;
+  margin-top: 5rem!important;
+  margin-bottom: 2.5rem!important;
+}
+
+#assignment-area {
+  padding-top: .75rem!important;
+  background-color: white;
+  max-height: 87vh;
+  height: 87vh;
+}
+
+#scoring-area {
+  padding-top: .75rem!important;
+  background-color: lightgray;
+  max-height: 87vh;
+  height: 87vh;
+}
+
+.darker-hr {
+  opacity: .5;
+}
+
+.extra-info {
+  position: absolute;
+  bottom: 1.5rem;
+  width: 50%;
+}
+
+.grade-input {
+  height: 50%;
+  background-color: transparent;
+  text-align: right;
+  border: none;
+  margin-right: -.2rem;
+  color: #454545;
+}
+
+#submit-grades-btn {
+  width: 100%;
+}
+
+#student-submissions {
+  text-align: center;
+}
+
+.max-points-display {
+  user-select: none;
+  color: #454545;
+}
+
+.student-grade-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.grade-btn {
+  width: 7rem;
+}
+
+.extra-credit-checkbox-parent {
+  position: absolute;
+  bottom: 2.25rem;
+}
+
+.student-grade-container {
+  margin-bottom: .5rem;
+}
+
+.view-file,
+.download-file {
+  margin-right: .25rem;
+  margin-bottom: .5rem;
+  width: 50%;
+}
+
+.file-btns-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+iframe {
+  width: 100%;
+  height: 75vh;
+}
+
+.submission-body {
+  overflow-y: auto;
+  max-height: 40vh;
+}

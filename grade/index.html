@@ -95,27 +95,28 @@
       </div>
     </nav>
 
+    <div id="grading-area" class="visually-hidden">
+      <div class="row">
+        <div id="assignment-area" class="col-8 shadow-5">
+
+        </div>
+        <div id="scoring-area" class="col-4">
+
+        </div>
+      </div>
+    </div>
+
     <div class="module-input-parent">
       <div>
         <div class="form-outline visually-hidden">
           <label for="module" class="form-label">Module</label>
-          <select class="form-select" id="module-input">
+          <select class="form-select" id="module-input" multiple>
             <option selected disabled value="">...</option>
           </select>
         </div>
       </div>
     </div>
-    
-    <div id="grading-area" class="visually-hidden">
-      <div class="row">
-        <div class="col-8" id="assignment-area">
 
-        </div>
-        <div class="col-4" id="scoring-area">
-          
-        </div>
-      </div>
-    </div>
   </main>
 
   <div class="modal" tabindex="-1" id="submission-error-modal">
