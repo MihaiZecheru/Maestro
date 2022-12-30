@@ -695,7 +695,7 @@ function populateAccordion(assignmentsQuizzesAndResources, _res) {
             if (isteacher()) {
               btn.addEventListener('click', () => {
                 // go to grading tab
-                window.location.href = `/grade/?module=${post.module}&assignment=${post.id}`;
+                window.location.href = `/grade/?module=${post.module}#${post.id}`;
               });
             } else if (is_submitted) {
               function showSubmission(submission) {
@@ -1023,7 +1023,7 @@ new Promise((_res) => {
           const sidenavAssignment = document.createElement('li');
           sidenavAssignment.classList.add('sidenav-item');
           sidenavAssignment.innerHTML = `
-            <a class="sidenav-link" href="${(isteacher()) ? `/grade/?module=${module.name}&assignment=${i}` : `#${assignment.module}_${i}`}">
+            <a class="sidenav-link" href="${(isteacher()) ? `/grade/?module=${module.name}` : `#${module.name}_${i}`}">
               <i class="far fa-file-alt fa-fw fa-lg me-3"></i>
               <span class="text-truncate">${assignment}</span>
             </a>`;
@@ -1041,7 +1041,7 @@ new Promise((_res) => {
           const sidenavQuiz = document.createElement('li');
           sidenavQuiz.classList.add('sidenav-item');
           sidenavQuiz.innerHTML = `
-            <a class="sidenav-link" href="${(isteacher()) ? `` : `#${module.name}_${i}`}">
+            <a class="sidenav-link" href="${(isteacher()) ? `/grade/?module=${module.name}` : `#${module.name}_${i}`}">
               <i class="fas fa-bong fa-fw fa-lg me-3"></i>
               <span class="text-truncate">${quiz}</span>
             </a>`;
@@ -1059,7 +1059,7 @@ new Promise((_res) => {
           const sidenavResource = document.createElement('li');
           sidenavResource.classList.add('sidenav-item');
           sidenavResource.innerHTML = `
-            <a class="sidenav-link" href="${(isteacher()) ? `` : `#${module.name}_${i}`}">
+            <a class="sidenav-link" href="#${module.name}_${i}">
               <i class="fas fa-paperclip fa-fw fa-lg me-3"></i>
               <span class="text-truncate">${resource}</span>
             </a>`;
