@@ -29,6 +29,8 @@ header {
   animation: banner-animation 3s linear infinite;
   display: flex;
   align-items: center;
+  position: fixed;
+  top: 0;
 }
 
 /* nav buttons */
