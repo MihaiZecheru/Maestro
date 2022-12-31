@@ -29,7 +29,6 @@ header {
   animation: banner-animation 3s linear infinite;
   display: flex;
   align-items: center;
-  position: fixed;
   top: 0;
 }
 
@@ -81,4 +80,8 @@ header > * {
 
 .dropdown-divider {
   opacity: 0.25;
+}
+
+#create-dropdown {
+  width: 1rem!important;
 }

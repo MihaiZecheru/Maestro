@@ -14,7 +14,7 @@ if (isTeacher()) {
   // add dropdown for `create <assignment|module|resource>`
   // to the header if the user is a teacher
 
-  document.body.innerHTML += `
+  document.querySelector('header').innerHTML += `
   <div class="dropdown" id="create-dropdown">
     <button
       class="btn btn-dark dropdown-toggle"
