@@ -338,8 +338,13 @@ window.onhashchange = async () => {
       }, {});
 
       for (let [student, grade] of Object.entries(grades)) {
+        document.getElementById(`grade-${student}-btn`).classList.remove("btn-danger");
+        document.getElementById(`grade-${student}-btn`).classList.remove("btn-primary");
+        document.getElementById(`grade-${student}-btn`).classList.remove("btn-success");
+        document.getElementById(`grade-${student}-btn`).classList.add("btn-success");
         API.put(`/submissions/assignments/${post.id}/${student}/grade`, grade);
         API.put(`/submitted/assignments/${post.id}/${student}/graded`, true);
+        API.put(`/users/${student}/points`, (await API.get(`/users/${student}/points`)) + grade);
       }
     });
 
@@ -353,8 +358,15 @@ window.onhashchange = async () => {
           if (isNaN(grade)) return;
           else grade = parseInt(grade);
 
+          document.getElementById(`grade-${student}-btn`).classList.remove("btn-danger");
+          document.getElementById(`grade-${student}-btn`).classList.remove("btn-primary");
+          document.getElementById(`grade-${student}-btn`).classList.remove("btn-success");
+          document.getElementById(`grade-${student}-btn`).classList.add("btn-success");
           API.put(`/submissions/assignments/${post.id}/${student}/grade`, grade);
           API.put(`/submitted/assignments/${post.id}/${student}/graded`, true);
+          API.get(`/users/${student}/points`).then((current_points) => {
+            API.put(`/users/${student}/points`, current_points + grade);
+          });
           input.blur();
         }
       });
